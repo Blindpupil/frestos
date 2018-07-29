@@ -1,6 +1,6 @@
 <template>
 
-  <div>
+  <v-app light>
     <v-toolbar class="white">
       <v-toolbar-title v-text="title"></v-toolbar-title>
     </v-toolbar>
@@ -194,24 +194,24 @@
         </v-layout>
       </v-footer>
     </v-content>
-  </div>
+  </v-app>
 
 </template>
 
 <script>
-export default {
-  name: 'Home',
-  data() {
-    return {
-      title: 'Frestos'
-    };
-  }
-  // methods: {
-  //   getImg(img) {
-  //     return getImgUrl(img);
-  //   }
-  // }
-};
+  export default {
+    name: 'Home',
+    data() {
+      return {
+        title: 'Frestos'
+      };
+    }
+    // methods: {
+    //   getImg(img) {
+    //     return getImgUrl(img);
+    //   }
+    // }
+  };
 </script>
 
 <style scoped>
