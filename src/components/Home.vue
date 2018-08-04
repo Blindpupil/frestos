@@ -19,14 +19,7 @@
             <div class="subheading mb-3 text-xs-center">Restaurants with friends made easy</div>
             <!-- Yes, you can see todos in the source html, so what? -->
             <!-- TODO add link to login page here -->
-            <v-btn
-              class="blue lighten-2 mt-5"
-              dark
-              large
-              href=""
-            >
-              Get Started
-            </v-btn>
+            <signup activator="Get Started!"> Get Started! </signup>
           </v-layout>
         </v-parallax>
       </section>
@@ -111,14 +104,7 @@
             <div class="headline white--text mb-3 text-xs-center">Finding a good restaurant has never been easier</div>
             <em>This section has a parallax image for the lols</em>
             <!-- TODO add link to login page here -->
-            <v-btn
-              class="blue lighten-2 mt-5"
-              dark
-              large
-              href=""
-            >
-              Get Started
-            </v-btn>
+            <signup activator="Sign up, it's free!"> Sign up, it's free! </signup>
           </v-layout>
         </v-parallax>
       </section>
@@ -199,19 +185,19 @@
 </template>
 
 <script>
+  import Signup from '@/components/Signup'
+
   export default {
     name: 'Home',
+    components: {
+      signup: Signup
+    },
     data() {
       return {
         title: 'Frestos'
-      };
+      }
     }
-    // methods: {
-    //   getImg(img) {
-    //     return getImgUrl(img);
-    //   }
-    // }
-  };
+  }
 </script>
 
 <style scoped>

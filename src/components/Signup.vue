@@ -1,10 +1,15 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="500px">
-    <v-btn slot="activator">sign up</v-btn>
+    <v-btn class="blue lighten-2" dark large slot="activator">
+      <slot></slot>
+    </v-btn>
     <v-card>
-      <v-card-title>
-        <span class="headline">Sign up :D</span>
-      </v-card-title>
+      <v-card-title
+          class="headline grey lighten-2"
+          primary-title
+        >
+          Get Started!
+        </v-card-title>
       <v-card-text>
         <v-container grid-list-md>
           <v-layout wrap v-model="valid">
@@ -29,7 +34,7 @@
               </v-flex>
               <v-flex xs12>
                 <v-text-field label="Password" type="password" required
-                              hint="No requirements: if you get hacked is your problem"
+                              hint="6 letters minimum"
                               v-model="password" :rules="passwordRules" @focus="hideNotif"
                 ></v-text-field>
               </v-flex>
@@ -80,7 +85,10 @@
         last_name: '',
         nameRules: [v => !!v || 'Full name is required'],
         password: '',
-        passwordRules: [v => !!v || 'Password is required'],
+        passwordRules: [
+          v => !!v || 'Password is required',
+          v => v.length >= 6 || 'Password must at least 6 characters'
+        ],
         email: '',
         emailRules: [
           v => !!v || 'E-mail is required',
@@ -108,7 +116,6 @@
               this.alert = true;
             })
             // if creating user fails display an error message
-            // eslint-disable-next-line
             .catch(err => {
               this.err = Object.assign({}, err);
               this.alert = true;
@@ -122,7 +129,7 @@
       hideNotif() {
         // hide all notifications
         this.err.code = '';
-        this.err.message = '';
+        this.err.message = ''
       },
       addUser(userUID) {
         // add the new user credentials to the database using the same ID
