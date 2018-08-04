@@ -1,12 +1,15 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import VueRouter from 'vue-router'
 import Home from '@/components/Home'
 import Dashboard from '@/components/dashboard/Dashboard'
+import Restaurants from '@/components/dashboard/Restaurants'
+import Meetings from '@/components/dashboard/Meetings'
 import Login from '@/components/Login'
 
-Vue.use(Router)
+Vue.use(VueRouter)
 
-export default new Router({
+export default new VueRouter({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -15,8 +18,17 @@ export default new Router({
     },
     {
       path: '/dashboard',
-      name: 'Dashboard',
-      component: Dashboard
+      component: Dashboard,
+      children: [
+        {
+          path: 'restaurants',
+          component: Restaurants
+        },
+        {
+          path: 'meetings',
+          component: Meetings
+        }
+      ]
     },
     {
       path: '/login',
@@ -25,3 +37,4 @@ export default new Router({
     }
   ]
 })
+
