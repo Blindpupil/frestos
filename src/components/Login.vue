@@ -11,14 +11,17 @@
                         :type="e1 ? 'password' : 'text'"
           ></v-text-field>
 
-          <!--// Dialog-->
-          <sign-up></sign-up>
-
           <v-btn @click="login">
             login
           </v-btn>
 
           <v-btn @click="clear">clear</v-btn>
+
+          <!--// Dialog-->
+          <signup btnclass="blue-grey">
+            Not a member?
+          </signup>
+
         </v-form>
 
         <v-alert outline type="warning" dismissible v-model="alert" transition="slide-x-transition">
@@ -30,13 +33,13 @@
 </template>
 
 <script>
-  import sign_up from './Signup';
+  import signup from './Signup';
   import firebase from 'firebase';
 
   export default {
     name: 'log-in',
     components: {
-      'sign-up': sign_up
+      signup
     },
     data() {
       return {

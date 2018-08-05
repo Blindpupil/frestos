@@ -1,6 +1,6 @@
 <template>
 
-  <v-app light>
+  <v-app>
     <v-toolbar class="white">
       <v-toolbar-title v-text="title"></v-toolbar-title>
     </v-toolbar>
@@ -17,9 +17,8 @@
             <img src="../assets/vuetify.png" alt="Vuetify.js" height="200">
             <h1 class="white--text mb-2 display-1 text-xs-center">Frestos</h1>
             <div class="subheading mb-3 text-xs-center">Restaurants with friends made easy</div>
-            <!-- Yes, you can see todos in the source html, so what? -->
-            <!-- TODO add link to login page here -->
-            <signup activator="Get Started!"> Get Started! </signup>
+            
+            <signup large btnclass="blue" dark> Get Started! </signup>
           </v-layout>
         </v-parallax>
       </section>
@@ -103,8 +102,8 @@
           <v-layout column align-center justify-center>
             <div class="headline white--text mb-3 text-xs-center">Finding a good restaurant has never been easier</div>
             <em>This section has a parallax image for the lols</em>
-            <!-- TODO add link to login page here -->
-            <signup activator="Sign up, it's free!"> Sign up, it's free! </signup>
+            
+            <signup large btnclass="blue" dark> Sign up it's free! </signup>
           </v-layout>
         </v-parallax>
       </section>

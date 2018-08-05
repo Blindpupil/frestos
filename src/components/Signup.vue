@@ -1,81 +1,99 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="500px">
-    <v-btn class="blue lighten-2" dark large slot="activator">
+    <!--// Provide button customization to instances of this component-->
+    <v-btn v-bind="$attrs" :class="btnclass" slot="activator">
       <slot></slot>
     </v-btn>
-    <v-card>
+    
+    <v-card dark>
       <v-card-title
-          class="headline grey lighten-2"
+          class="headline grey darken-1"
           primary-title
         >
           Get Started!
-        </v-card-title>
+      </v-card-title>
+
       <v-card-text>
         <v-container grid-list-md>
           <v-layout wrap v-model="valid">
-            <!--<v-form >-->
-              <v-flex xs12 sm6>
-                <v-text-field label="First name" required
-                              hint="What did they call you at birth?"
-                              v-model="first_name" :rules="nameRules" @focus="hideNotif"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field label="Last name" required
-                              hint="What's your dad or mom last name? (choose your favorite)"
-                              v-model="last_name" :rules="nameRules" @focus="hideNotif"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field label="Email" required
-                              hint="It's better than signing in through Facebook"
-                              v-model="email" :rules="emailRules" @focus="hideNotif"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-text-field label="Password" type="password" required
-                              hint="6 letters minimum"
-                              v-model="password" :rules="passwordRules" @focus="hideNotif"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-select
-                  :items="['Restaurants', 'Patisseries', 'E-sports', 'Real sports', 'Trolling']"
-                  label="Interests"
-                  multiple
-                  autocomplete
-                  chips
-                ></v-select>
-              </v-flex>
-            <!--</v-form>-->
+
+            <v-flex xs12 sm6>
+              <v-text-field label="First name" required
+                            hint="What did they call you at birth?"
+                            v-model="first_name" :rules="nameRules" @focus="hideNotif"
+              ></v-text-field>
+            </v-flex>
+
+            <v-flex xs12 sm6>
+              <v-text-field label="Last name" required
+                            hint="What's your dad or mom last name? (choose your favorite)"
+                            v-model="last_name" :rules="nameRules" @focus="hideNotif"
+              ></v-text-field>
+            </v-flex>
+
+            <v-flex xs12>
+              <v-text-field label="Email" required
+                            hint="It's better than signing in through Facebook"
+                            v-model="email" :rules="emailRules" @focus="hideNotif"
+              ></v-text-field>
+            </v-flex>
+
+            <v-flex xs12>
+              <v-text-field label="Password" type="password" required
+                            hint="6 letters minimum"
+                            v-model="password" :rules="passwordRules" @focus="hideNotif"
+              ></v-text-field>
+            </v-flex>
+
+            <v-flex xs12>
+              <v-select
+                :items="['Restaurants', 'Patisseries', 'E-sports', 'Real sports', 'Trolling']"
+                v-model="interests"
+                label="Interests"
+                multiple
+                autocomplete
+                chips
+              ></v-select>
+            </v-flex>
 
             <!--// Alert -->
-            <v-alert outline type="success" dismissible v-model="alert" transition="slide-x-transition">
+            <!-- TODO create red alert for errors and green for success -->
+            <v-alert outline type="info" dismissible v-model="alert" transition="slide-x-transition">
               {{ (err.code !== '')? err.message : 'You have successfully signed up. ' }}
             </v-alert>
 
           </v-layout>
         </v-container>
+        
         <small>*indicates required field (duh)</small>
+
       </v-card-text>
+
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" flat @click.native="dialog = false">Close</v-btn>
         <v-btn color="blue darken-2" flat @click.native="signUp()" :disabled="!valid">Save</v-btn>
       </v-card-actions>
+      
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-  import firebase from 'firebase';
-  import { usersRef } from '../firebase/'; // TODO: see if this is required here
+  import firebase from 'firebase'
+  import { userRef } from '../firebase/'
 
   export default {
     name: 'sign-up',
+    created() {
+      this.$store.dispatch('setUserRef', userRef)
+    },
+    inheritAttrs: false,
+    props: ['btnclass'],
     data() {
       return {
         dialog: false,
+        interests: [],
         notifications: false,
         sound: true,
         widgets: false,
@@ -109,26 +127,26 @@
         if (this.email && this.password && this.first_name && this.last_name) {
           // create a new user with the provided email and password
           firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-            .then((user) => {
+            .then(({user}) => {
               // if user created successfully add it to the db and display a success message
-              this.userUID = user.uid;
-              this.addUser(user.uid);
-              this.alert = true;
+              this.userUID = user.uid
+              this.addUser(user.uid)
+              this.alert = true
             })
             // if creating user fails display an error message
             .catch(err => {
-              this.err = Object.assign({}, err);
-              this.alert = true;
+              this.err = Object.assign({}, err)
+              this.alert = true
             });
         } else {
-          this.err.code = 'Empty Fields';
-          this.err.message = 'Fill in all required fields. Please and thank you';
-          this.alert = true;
+          this.err.code = 'Empty Fields'
+          this.err.message = 'Fill in all required fields. Please and thank you'
+          this.alert = true
         }
       },
       hideNotif() {
         // hide all notifications
-        this.err.code = '';
+        this.err.code = ''
         this.err.message = ''
       },
       addUser(userUID) {
