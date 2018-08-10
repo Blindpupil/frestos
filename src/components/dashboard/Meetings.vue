@@ -1,11 +1,11 @@
 <template>
   <div>
     <div>
-      <v-date-picker v-model="datepicker" :landscape="landscape" :reactive="reactive"></v-date-picker>
+      <v-date-picker v-model="datepicker" :reactive="reactive"></v-date-picker>
     </div>
 
     <div>
-      <v-time-picker v-model="timepicker" :landscape="landscape"></v-time-picker>
+      <v-time-picker v-model="timepicker" :reactive="reactive"></v-time-picker>
     </div>
   </div>
 </template>
@@ -17,8 +17,8 @@
     return {
         datepicker: null,
         timepicker: null,
-        landscape: true,
-        reactive: false
+        landscape: false,
+        reactive: true
       }
     }
   }
