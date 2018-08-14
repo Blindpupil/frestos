@@ -1,11 +1,10 @@
 <template>
   <div>
+       <h2 text-align-center>Meeting content</h2>
     <div>
       <v-date-picker v-model="datepicker" :reactive="reactive"></v-date-picker>
-    </div>
-
-    <div>
-      <v-time-picker v-model="timepicker" :reactive="reactive"></v-time-picker>
+    
+      <v-time-picker v-model="timepicker" :reactice="reactive"></v-time-picker>
     </div>
   </div>
 </template>
