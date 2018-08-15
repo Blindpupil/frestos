@@ -6,8 +6,6 @@
       <v-date-picker v-model="datepicker" :reactive="reactive"></v-date-picker>
    
 
-
-    
       <v-time-picker v-model="timepicker" :reactive="reactive"></v-time-picker>
     </div>
 
