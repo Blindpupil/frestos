@@ -10,7 +10,7 @@
             <v-btn color="teal" flat value="favorites">
                 <span>Favorites</span>
                   <v-icon>favorite</v-icon>
-             </v-btn>
+            </v-btn>
                 <v-btn color="teal" flat value="nearby">
                   <span>Nearby</span>
                     <v-icon>place</v-icon>
@@ -18,7 +18,7 @@
           </v-bottom-nav>
       </v-card>
     </div>
-          <h2>Content from restaurants component </h2>
+          <h2>Content from Restaurants Component </h2>
           <p> {{ restaurants }}</p>  
   </div>
 </template>
