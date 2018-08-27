@@ -1,7 +1,7 @@
 <template>
   <div> 
-      <h2>Content from restaurants component </h2>
-      <p> {{ restaurants }}</p>
+          <h2>Content from restaurants component </h2>
+          <p> {{ restaurants }}</p>  
   </div>
 </template>
 
