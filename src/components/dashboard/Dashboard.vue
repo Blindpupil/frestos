@@ -13,10 +13,11 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              {{ item.text }}
+              <router-link :to="item.link"> {{item.text}} </router-link>
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+
         <v-subheader class="mt-3 grey--text text--darken-1">FOODY FRIENDS</v-subheader>
         <v-list>
           <v-list-tile v-for="item in friends" :key="item.text" avatar>
@@ -74,7 +75,7 @@
       <v-container fill-height>
         <v-layout justify-center align-center>
           <v-flex shrink>
-            <restaurants> </restaurants>
+            <router-view></router-view>
           </v-flex>
         </v-layout>
       </v-container>
@@ -84,15 +85,14 @@
 </template>
 
 <script>
-  import Routes from '@/router/'
+  import Routes from '@/router'
   import restaurants from './Restaurants.vue'
   import { mapState } from 'vuex'
 
   export default {
     name: 'Dashboard',
     components: {
-      Routes,
-      restaurants
+      Routes
     },
     computed: {
       ...mapState({
@@ -105,9 +105,8 @@
       return {
         drawer: true,
         items: [
-          { icon: 'trending_up', text: 'Most Popular' },
-          { icon: 'subscriptions', text: 'Subscriptions' },
-          { icon: 'history', text: 'History' }
+          { icon: 'trending_up', text: 'Restaurants', link: '/dashboard/restaurants' },
+          { icon: 'event', text: 'Meetings', link: '/dashboard/meetings' }
         ],
         friends: [
           { picture: 28, text: 'Joseph' },

@@ -29,6 +29,7 @@ module.exports = {
     'comma-dangle': ['error', 'never'],
     'semi': ['error', 'never'],
     'func-names': ["error", "as-needed"],
+    'semi': ['error', 'never'],
     'no-console': ["error", { allow: ["warn", "error", "info"] }],
     'no-unused-expressions': ["error", { "allowShortCircuit": true, "allowTernary": true }],
     'no-underscore-dangle': ["error", { "allow": ["_doc", "_id"] }],
