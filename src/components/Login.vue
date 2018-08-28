@@ -4,11 +4,11 @@
       <v-flex md6 lg4>
         <v-form ref="form" lazy-validation>
           <h2>Please login to access your dashboard</h2>
-          <v-text-field label="E-mail" v-model="email" required></v-text-field>
+          <v-text-field label="E-mail" v-model="email" @focus="hideNotif" required></v-text-field>
 
           <v-text-field name="input-10-1" label="Enter your password" v-model="password" required
                         :append-icon="e1 ? 'visibility' : 'visibility_off'" :append-icon-cb="() => (e1 = !e1)"
-                        :type="e1 ? 'password' : 'text'"
+                        :type="e1 ? 'password' : 'text'" @keyup.enter="login" @focus="hideNotif"
           ></v-text-field>
 
           <v-btn @click="login">
@@ -24,17 +24,18 @@
 
         </v-form>
 
-        <v-alert outline type="warning" dismissible v-model="alert" transition="slide-x-transition">
+        <v-alert outline type="error" dismissible v-model="alert" transition="slide-x-transition">
           {{ error }}
         </v-alert>
+        
       </v-flex>
     </v-layout>
   </v-app>
 </template>
 
 <script>
-  import signup from './Signup';
-  import firebase from 'firebase';
+  import { mapState } from 'vuex'
+  import signup from '@/components/Signup'
 
   export default {
     name: 'log-in',
@@ -47,27 +48,38 @@
         email: '',
         password: '',
         e1: true,
-        error: ''
-      };
+      }
+    },
+    computed: {
+      ...mapState({
+        // map this.$store.state.auth.error to this.error
+        error: state => state.auth.error.message
+      })
     },
     methods: {
       login() {
-        // login to firebase with email and password
-        firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-          .then(() => { // .then((user) => {
-            // redirect to the admin page
-            this.$router.push('/dashboard');
+        const inputs = {
+          email: this.email,
+          password: this.password
+        }
+        this.$store.dispatch('login', inputs)
+          .then(() => {
+            if (this.error) {
+              this.alert = true
+            } else {
+              this.$router.push('/dashboard')
+            }
           })
-          .catch((error) => {
-            this.alert = true;
-            this.error = error.message;
-          });
       },
       clear() {
-        this.$refs.form.reset();
+        this.$refs.form.reset()
+      },
+      hideNotif() {
+        this.alert = false
+        this.$store.commit('setError', {})
       }
     }
-  };
+  }
 </script>
 
 <style lang="scss" scoped>

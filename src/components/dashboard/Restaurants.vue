@@ -6,9 +6,8 @@
 </template>
 
 <script>
-	import firebase from 'firebase';
-  import { mapGetters } from 'vuex';
-  import { restosRef } from '../../firebase/';
+  import { mapGetters } from 'vuex'
+  import { restosRef } from '@/firebase/'
 
   export default {
     name: 'restaurants',
@@ -19,10 +18,10 @@
     computed: mapGetters(['restaurants']),
     data() {
       return {
-          name: ''
-      };
+        name: ''
+      }
     }
-  };
+  }
 </script>
 
 <style scoped lang="scss">
