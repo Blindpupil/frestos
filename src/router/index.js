@@ -18,7 +18,8 @@ export default new VueRouter({
     },
     {
       path: '/dashboard',
-      component: Dashboard,
+      name: 'Dashboard',
+      component: () => import('@/components/dashboard/Dashboard'),
       children: [
         {
           path: 'restaurants',
@@ -37,4 +38,3 @@ export default new VueRouter({
     }
   ]
 })
-
