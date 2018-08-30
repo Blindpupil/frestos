@@ -4,15 +4,12 @@
   </div>
 </template>
 
+ 
 <script>
   export default {
   name: 'meetings',
   data() {
     return {
-        datepicker: null,
-        timepicker: null,
-        landscape: true,
-        reactive: false
       }
     }
   }
