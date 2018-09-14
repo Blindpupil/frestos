@@ -114,5 +114,8 @@
     color: $primary;
     text-decoration: none;
   }
-
+.router-link-active{
+  color: red;
+  
+}
 </style>
