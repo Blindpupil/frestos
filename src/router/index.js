@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '@/components/Home'
+import Dashboard from '@/components/dashboard/Dashboard'
 import Restaurants from '@/components/dashboard/Restaurants'
 import Meetings from '@/components/dashboard/Meetings'
 import Login from '@/components/Login'
@@ -17,8 +18,7 @@ export default new VueRouter({
     },
     {
       path: '/dashboard',
-      name: 'Dashboard',
-      component: () => import('@/components/dashboard/Dashboard'),
+      component: Dashboard,
       children: [
         {
           path: 'restaurants',
@@ -37,3 +37,4 @@ export default new VueRouter({
     }
   ]
 })
+

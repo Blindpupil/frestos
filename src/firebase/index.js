@@ -6,12 +6,11 @@ const db = app.database()
 
 // create database references
 const restosRef = db.ref('restaurants')
-const userRef = db.ref('users')
+const usersRef = db.ref('users')
 
 // current user
 // const currentUser = () => {
 //   const key = Firebase.auth().currentUser.uid;
 // };
 
-export { userRef, restosRef }
-
+export { usersRef, restosRef }

@@ -39,12 +39,6 @@
           </v-list-tile-action>
           <v-list-tile-title class="grey--text text--darken-1">Manage Your Options</v-list-tile-title>
         </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon color="grey darken-1">power_settings_new</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title @click="logout" class="grey--text text--darken-1">Sign Out</v-list-tile-title>
-        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
@@ -80,27 +74,17 @@
         </v-layout>
       </v-container>
     </v-content>
-
   </v-app>
 </template>
 
 <script>
   import Routes from '@/router'
-  import restaurants from './Restaurants.vue'
-  import { mapState } from 'vuex'
 
   export default {
     name: 'Dashboard',
     components: {
       Routes
     },
-    computed: {
-      ...mapState({
-        // map this.$store.state.auth.currentUser to this.user
-        user: state => state.auth.currentUser
-      })
-    },
-    created() { console.log('currentUser at component created: ', this.user) },
     data() {
       return {
         drawer: true,
@@ -115,12 +99,6 @@
           { picture: 58, text: 'Nokia' },
           { picture: 78, text: 'MKBHD' }
         ]
-      }
-    },
-    methods: {
-      logout() {
-        this.$store.dispatch('logout')
-        this.$router.push('/login')
       }
     }
   }
