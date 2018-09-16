@@ -13,7 +13,7 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              <router-link :to="item.link"> {{item.text}} </router-link>
+              <router-link :to="item.link" exact> {{item.text}} </router-link>
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -116,6 +116,6 @@
   }
 .router-link-active{
   color: red;
-  
+
 }
 </style>
