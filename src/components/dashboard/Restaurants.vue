@@ -18,6 +18,7 @@
           </v-bottom-nav>
       </v-card>
     </div>
+    
           <h2>Content from Restaurants Component </h2>
           <p> {{ restaurants }}</p>  
   </div>
