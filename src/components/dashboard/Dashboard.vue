@@ -115,7 +115,6 @@
     text-decoration: none;
   }
 .router-link-active{
-  color: red;
-
+  color: #ba0000;
 }
 </style>
