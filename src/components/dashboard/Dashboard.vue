@@ -42,7 +42,7 @@
           </v-list-tile-action>
           <v-list-tile-title class="grey--text text--darken-1">Manage Your Options</v-list-tile-title>
         </v-list-tile>
-
+        
         <v-list-tile @click="logout" class="hoverable">
           <v-list-tile-action>
             <v-icon color="grey darken-1">power_settings_new</v-icon>
@@ -93,8 +93,6 @@
 
 <script>
   import Routes from '@/router'
-  import restaurants from './Restaurants.vue'
-  import { mapState } from 'vuex'
 
   export default {
     name: 'Dashboard',
@@ -137,14 +135,13 @@
 
 <style scoped lang="scss">
 
-  // TODO: create files with custom variables, mixins, etc..
+  // TODO: create files with custom variables, mixins, etc. See https://vuetifyjs.com/en/style/colors
   $primary: lightgray;
 
   .title a {
     color: $primary;
     text-decoration: none;
   }
-
   .hoverable:hover {
     i {
       color: $primary !important;
@@ -153,5 +150,4 @@
       color: $primary !important;
     }
   }
-
 </style>

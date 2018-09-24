@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { isEmpty } from 'lodash-es'
 import Home from '@/components/Home'
+import Dashboard from '@/components/dashboard/Dashboard'
 import Restaurants from '@/components/dashboard/Restaurants'
 import Meetings from '@/components/dashboard/Meetings'
 import Login from '@/components/Login'
@@ -53,3 +54,4 @@ export default new VueRouter({
     }
   ]
 })
+

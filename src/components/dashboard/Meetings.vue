@@ -1,9 +1,9 @@
 <template>
   <div>
-     <h2 text-align-center>Meeting content</h2>
+      <h2>Content meetings</h2>
         <div>
-           <v-date-picker v-model="datepicker" :landscape="reactive"></v-date-picker>
-           <v-time-picker v-model="timepicker" :reactive="reactive"></v-time-picker>
+          <v-date-picker v-model="datepicker" :reactive="reactive"></v-date-picker>
+          <v-time-picker v-model="timepicker" :reactive="reactive"></v-time-picker>
         </div>
   </div>
 </template>
@@ -15,13 +15,13 @@
     return {
         datepicker: null,
         timepicker: null,
-        landscape: false,
-        reactive: true
+        landscape: true,
+        reactive: false
       }
     }
   }
 </script>
 
 <style scoped lang="scss">
- 
+
 </style>
