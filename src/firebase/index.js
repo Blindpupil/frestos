@@ -8,9 +8,4 @@ const db = app.database()
 const restosRef = db.ref('restaurants')
 const usersRef = db.ref('users')
 
-// current user
-// const currentUser = () => {
-//   const key = Firebase.auth().currentUser.uid;
-// };
-
-export { usersRef, restosRef }
+export { userRef, restosRef }

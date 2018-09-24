@@ -1,6 +1,15 @@
 <template>
 
   <v-app>
+    <router-link to="/dashboard">
+      <v-tooltip left>
+        <v-btn slot="activator" color="blue" fixed dark fab bottom right>
+          <v-icon>account_circle</v-icon>
+        </v-btn>
+        <span> Go to dashboard </span>      
+      </v-tooltip>
+    </router-link>
+
     <v-toolbar class="white">
       <v-toolbar-title v-text="title"></v-toolbar-title>
     </v-toolbar>
