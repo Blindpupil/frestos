@@ -1,5 +1,17 @@
 import firebase from 'firebase'
 
+const userInSession =  function () {
+  return new Promise((resolve, reject) => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        resolve(user.uid)
+      } else {
+        reject(Error('No user authenticated'))
+      }
+    })
+  })
+}
+
 export default {
   state: {
     currentUser: '',
@@ -10,6 +22,16 @@ export default {
     error: state => state.error
   },
   actions: {
+    async session({ commit }) {
+      let user
+      try {
+        user = await userInSession()
+        commit('setUser', user)
+      } catch (err) {
+        console.error(err)
+        commit('setUser', {})
+      }
+    },
     async signup({ commit, dispatch }, inputs) {
       let result
       let mergedUser
@@ -19,16 +41,16 @@ export default {
 
         await dispatch('addUserToDb', mergedUser)
 
-        commit('setUser', result.user.uid)
+        await dispatch('session')
       } catch (err) {
         commit('setError', err)
       }
     },
-    async login({ commit }, { email, password }) {
+    async login({ commit, dispatch }, { email, password }) {
       try {
-        const { user } = await firebase.auth().signInWithEmailAndPassword(email, password)
+        await firebase.auth().signInWithEmailAndPassword(email, password)
 
-        commit('setUser', user.uid)
+        await dispatch('session')
       } catch (err) {
         commit('setError', err)
       }

@@ -1,11 +1,26 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { isEmpty } from 'lodash-es'
 import Home from '@/components/Home'
 import Restaurants from '@/components/dashboard/Restaurants'
 import Meetings from '@/components/dashboard/Meetings'
 import Login from '@/components/Login'
+import store from '@/store'
 
 Vue.use(VueRouter)
+
+async function requireAuth(to, from, next) {
+  try {
+    await store.dispatch('session')
+    if (isEmpty(store.getters.currentUser)) {
+      next({ path: '/login', replace: true })
+    } else {
+      next()
+    }
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 export default new VueRouter({
   mode: 'history',
@@ -19,6 +34,7 @@ export default new VueRouter({
       path: '/dashboard',
       name: 'Dashboard',
       component: () => import('@/components/dashboard/Dashboard'),
+      beforeEnter: (to, from, next) => requireAuth(to, from, next),
       children: [
         {
           path: 'restaurants',

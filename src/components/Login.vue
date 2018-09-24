@@ -24,7 +24,7 @@
 
         </v-form>
 
-        <v-alert outline type="error" dismissible v-model="alert" transition="slide-x-transition">
+        <v-alert type="error" dismissible v-model="alert" transition="slide-x-transition">
           {{ error }}
         </v-alert>
         
@@ -84,7 +84,7 @@
 
 <style lang="scss" scoped>
   .login {
-    background-image: url("../assets/section.jpg");
+    background-image: url("../assets/forest.jpg");
     background-size: auto;
   }
 </style>

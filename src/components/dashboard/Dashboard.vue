@@ -7,18 +7,19 @@
       app
     >
       <v-list dense>
-        <v-list-tile v-for="item in items" :key="item.text">
+        <v-list-tile v-for="item in items" :key="item.text" @click="route(item.link)">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              <router-link :to="item.link"> {{item.text}} </router-link>
+              <p> {{item.text}} </p>
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
 
         <v-subheader class="mt-3 grey--text text--darken-1">FOODY FRIENDS</v-subheader>
+
         <v-list>
           <v-list-tile v-for="item in friends" :key="item.text" avatar>
             <v-list-tile-avatar>
@@ -27,26 +28,30 @@
             <v-list-tile-title v-text="item.text"></v-list-tile-title>
           </v-list-tile>
         </v-list>
+
         <v-list-tile class="mt-3">
           <v-list-tile-action>
             <v-icon color="grey darken-1">add_circle_outline</v-icon>
           </v-list-tile-action>
           <v-list-tile-title class="grey--text text--darken-1">Add New Friend</v-list-tile-title>
         </v-list-tile>
+
         <v-list-tile>
           <v-list-tile-action>
             <v-icon color="grey darken-1">settings</v-icon>
           </v-list-tile-action>
           <v-list-tile-title class="grey--text text--darken-1">Manage Your Options</v-list-tile-title>
         </v-list-tile>
-        <v-list-tile>
+
+        <v-list-tile @click="logout" class="hoverable">
           <v-list-tile-action>
             <v-icon color="grey darken-1">power_settings_new</v-icon>
           </v-list-tile-action>
-          <v-list-tile-title @click="logout" class="grey--text text--darken-1">Sign Out</v-list-tile-title>
+          <v-list-tile-title class="grey--text text--darken-1">Sign Out</v-list-tile-title>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
+
     <v-toolbar
       dense
       fixed
@@ -59,7 +64,9 @@
       <v-toolbar-title class="mr-5 align-center">
         <span class="title"><router-link to="/"> Frestos </router-link></span>
       </v-toolbar-title>
+
       <v-spacer></v-spacer>
+
       <v-layout row align-center style="max-width: 650px">
         <v-text-field
           placeholder="Search..."
@@ -71,6 +78,7 @@
         ></v-text-field>
       </v-layout>
     </v-toolbar>
+
     <v-content>
       <v-container fill-height>
         <v-layout justify-center align-center>
@@ -80,7 +88,6 @@
         </v-layout>
       </v-container>
     </v-content>
-
   </v-app>
 </template>
 
@@ -100,7 +107,6 @@
         user: state => state.auth.currentUser
       })
     },
-    created() { console.log('currentUser at component created: ', this.user) },
     data() {
       return {
         drawer: true,
@@ -118,6 +124,9 @@
       }
     },
     methods: {
+      route(link) {
+        this.$router.push(link)
+      },
       logout() {
         this.$store.dispatch('logout')
         this.$router.push('/login')
@@ -134,6 +143,15 @@
   .title a {
     color: $primary;
     text-decoration: none;
+  }
+
+  .hoverable:hover {
+    i {
+      color: $primary !important;
+    }
+    .list__tile__title {
+      color: $primary !important;
+    }
   }
 
 </style>
