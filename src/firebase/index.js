@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Firebase from 'firebase'
 import config from './config'
 

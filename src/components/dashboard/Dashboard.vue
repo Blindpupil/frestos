@@ -93,6 +93,7 @@
 
 <script>
   import Routes from '@/router'
+  import { mapState } from 'vuex'
 
   export default {
     name: 'Dashboard',
