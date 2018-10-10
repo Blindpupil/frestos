@@ -1,11 +1,6 @@
 <template>
   <v-app dark id="inspire">
-    <v-navigation-drawer
-      fixed
-      clipped
-      v-model="drawer"
-      app
-    >
+    <v-navigation-drawer fixed clipped v-model="drawer" app>
       <v-list dense>
         <v-list-tile v-for="item in items" :key="item.text" @click="route(item.link)">
           <v-list-tile-action>
@@ -52,12 +47,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-toolbar
-      dense
-      fixed
-      clipped-left
-      app
-    >
+    <v-toolbar dense fixed clipped-left app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <!-- TODO: add a nice little logo icon here -->
       <!-- <v-icon class="mx-3">fa-youtube</v-icon>-->
