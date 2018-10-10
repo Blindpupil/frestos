@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { isEmpty } from 'lodash-es'
+import store from '@/store'
+import Login from '@/components/Login'
 import Home from '@/components/Home'
+import Welcome from '@/components/dashboard/Welcome'
 import Restaurants from '@/components/dashboard/Restaurants'
 import Meetings from '@/components/dashboard/Meetings'
-import Login from '@/components/Login'
-import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -36,6 +37,10 @@ export default new VueRouter({
       component: () => import('@/components/dashboard/Dashboard'),
       beforeEnter: (to, from, next) => requireAuth(to, from, next),
       children: [
+        {
+          path: '/',
+          component: Welcome
+        },
         {
           path: 'restaurants',
           component: Restaurants

@@ -1,7 +1,7 @@
 <template>
   <div>     
     <h2>Content from Restaurants Component </h2>
-    <p> {{ restaurants }}</p>
+    <p> {{ restaurants }} </p>
 
     <v-card>
       <v-bottom-nav :active.sync="bottomNav" :value="true" absolute color="transparent">
@@ -25,7 +25,6 @@
 </template>
 
 <script>
-	import firebase from 'firebase';
   import { mapGetters } from 'vuex';
   import { restosRef } from '@/firebase';
 
@@ -34,14 +33,9 @@
     created() {
       this.$store.dispatch('setRestosRef', restosRef)
     },
-    components: {
-       color: 'white'
-    },
     computed: mapGetters(['restaurants']),
     data() {
-      return {
-          name: ''
-      };
+      return {};
     }
   };
 </script>
