@@ -49,14 +49,14 @@
               </v-flex>
 
               <v-flex xs12>
-                <v-select
+                <v-autocomplete
                   :items="['Restaurants', 'Patisseries', 'E-sports', 'Real sports', 'Trolling']"
                   v-model="interests"
                   label="Interests"
                   multiple
                   autocomplete
                   chips
-                ></v-select>
+                ></v-autocomplete>
               </v-flex>
 
               <!--// Alert -->

@@ -62,7 +62,7 @@
           placeholder="Search..."
           single-line
           append-icon="search"
-          :append-icon-cb="() => {}"
+          @click:append="() => {}"
           color="white"
           hide-details
         ></v-text-field>

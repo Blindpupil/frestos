@@ -33,7 +33,6 @@ export default new VueRouter({
     },
     {
       path: '/dashboard',
-      name: 'Dashboard',
       component: () => import('@/components/dashboard/Dashboard'),
       beforeEnter: (to, from, next) => requireAuth(to, from, next),
       children: [
