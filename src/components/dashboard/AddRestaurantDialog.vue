@@ -10,32 +10,37 @@
         <span class="headline">Adding a restaurant</span>
       </v-card-title>
       <v-card-text>
-        <v-container grid-list-md>
-          <v-layout wrap row>
-            <v-flex xs12 md6>
-              <v-text-field label="Name*" v-model="name" hint="The restaurant's, not yours" required></v-text-field>
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-select 
-                :items="['5', '4', '3', '2', '1']" label="Rating" 
-                v-model="rating" hint="How bad was it?"
-              ></v-select>
-            </v-flex>
-            <v-flex xs12>
-              <v-text-field label="Location*" v-model="location" hint="Would help others locate it" required></v-text-field>
-            </v-flex>
-            <v-flex xs12>
-              <v-text-field label="Link" v-model="link" value="http://crappycrabs.wtf" hint="If you have it" name="link"></v-text-field>
-            </v-flex>
-            <v-flex xs12>
-              <v-textarea
-                label="Comment" v-model="comment" hint= "Share your experience"
-                value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
-              ></v-textarea>
-            </v-flex>
-          </v-layout>
-        </v-container>
-        <small>*indicates required field</small>
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-container grid-list-md>
+            <v-layout wrap row>
+              <v-flex xs12 md6>
+                <v-text-field 
+                  label="Name*" v-model="name" required
+                  hint="The restaurant's, not yours"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-select 
+                  :items="['5', '4', '3', '2', '1']" label="Rating" 
+                  v-model="rating" hint="How bad was it?"
+                ></v-select>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field 
+                  label="Location*" v-model="location" required
+                  hint="Would help others locate it" 
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field label="Link" v-model="link" hint="If you have it"></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-textarea label="Comment" v-model="comment" hint= "Share your experience"></v-textarea>
+              </v-flex>
+            </v-layout>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -47,12 +52,13 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'add-restaurant-dialog',
     data() {
       return {
+        valid: true,
         dialog: false,
         name: '',
         location: '',
@@ -64,21 +70,21 @@
       };
     },
     computed: {
-      ...mapState({
-        error: state => state.auth.error.message,
-        user: state => state.auth.currentUser
+      ...mapGetters({
+        error: 'error',
+        user: 'currentUser'
       })
     },
     methods: {
       writeRestaurant() {
-        const restaurant = {
+        const inputs = {
           name: this.name,
           location: this.location,
           rating: this.rating,
           link: this.link,
           uid: this.user
         }
-        return this.$store.dispatch('writeRestaurantToFb', restaurant)
+        return this.$store.dispatch('writeRestaurantToFb', inputs)
       },
       writeComment(restoId) {
         const comment = {
@@ -90,14 +96,18 @@
       },
       submitInfo() {
         this.writeRestaurant().then(restoId => {
-          if (this.error) {
-            console.error('error at submitInfo during writeRestaurant', error)
+          if (this.error.message) {
+            console.error('error at submitInfo during writeRestaurant', this.error.message)
             this.error_alert = true
           } else {
-            // use the restaurant id to push the comment
-            this.writeComment(restoId)
+            // use the restaurant id to push the comment, if any
+            if (this.comment) this.writeComment(restoId)
+
             // if resto created successfully display a success message
             this.success_alert = true
+            // close dialog and reset fields
+            this.dialog = false
+            this.clear()
           }
         })
       },
@@ -106,7 +116,7 @@
       },
       hideNotif() {
         // hide all notifications
-        this.$store.commit('setError', {})
+        this.$store.commit('clearError')
         this.error_alert = false
       }
     }

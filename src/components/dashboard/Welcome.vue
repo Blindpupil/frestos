@@ -11,11 +11,8 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-
   export default {
     name: 'restaurants',
-    computed: mapGetters(['restaurants']),
     data() {
       return {};
     }

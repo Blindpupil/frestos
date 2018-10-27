@@ -1,10 +1,10 @@
 <template>
   <div>     
-    <h2>Content from Restaurants Component </h2>
-
     <add-restaurant-dialog> Add Restaurant </add-restaurant-dialog>
+    <restaurant-list> These are your restaurants </restaurant-list>
 
-    <!-- <v-card>
+    <!-- TODO: Fix this piece of UI
+    <v-card>
       <v-bottom-nav :active.sync="bottomNav" :value="true" absolute color="transparent">
         <v-btn color="teal" flat value="recent">
           <span>Recent</span>
@@ -26,20 +26,16 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import { restosRef } from '@/firebase';
   import AddRestaurantDialog from '@/components/dashboard/AddRestaurantDialog'
+  import RestaurantList from '@/components/dashboard/RestaurantList'
 
   export default {
     name: 'restaurants',
     inheritAttrs: false,
     components: {
-      AddRestaurantDialog
+      AddRestaurantDialog,
+      RestaurantList
     },
-    created() {
-      this.$store.dispatch('setRestosRef', restosRef)
-    },
-    computed: mapGetters(['restaurants']),
     data() {
       return {};
     }
@@ -47,12 +43,6 @@
 </script>
 
 <style scoped lang="scss">
-.card {
-  position: static;
 
-  .bottom-nav {
-    width: 20%;
-  }
-}
 </style>
  

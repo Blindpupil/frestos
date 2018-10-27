@@ -6,9 +6,12 @@
           <h2>Please login to access your dashboard</h2>
           <v-text-field label="E-mail" v-model="email" @focus="hideNotif" required></v-text-field>
 
-          <v-text-field name="input-10-1" label="Enter your password" v-model="password" required
-                        :append-icon="e1 ? 'visibility' : 'visibility_off'" :append-icon-cb="() => (e1 = !e1)"
-                        :type="e1 ? 'password' : 'text'" @keyup.enter="login" @focus="hideNotif"
+          <v-text-field
+            :append-icon="show ? 'visibility_off' : 'visibility'"
+            :type="show ? 'text' : 'password'"
+            @click:append="show = !show"
+            name="password" label="Password" hint="At least 6 characters" 
+            class="input-group--focused"
           ></v-text-field>
 
           <v-btn @click="login">
@@ -25,7 +28,7 @@
         </v-form>
 
         <v-alert type="error" dismissible v-model="alert" transition="slide-x-transition">
-          {{ error }}
+          {{ error.message }}
         </v-alert>
         
       </v-flex>
@@ -34,7 +37,7 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import { mapGetters } from 'vuex'
   import signup from '@/components/Signup'
 
   export default {
@@ -47,14 +50,12 @@
         alert: false,
         email: '',
         password: '',
-        e1: true,
+        show: false,
       }
     },
     computed: {
-      ...mapState({
-        // map this.$store.state.auth.error to this.error
-        error: state => state.auth.error.message
-      })
+      // map this.$store.getters.errors.error.message to this.error
+      ...mapGetters(['error'])
     },
     methods: {
       login() {
@@ -62,21 +63,20 @@
           email: this.email,
           password: this.password
         }
-        this.$store.dispatch('login', inputs)
-          .then(() => {
-            if (this.error) {
-              this.alert = true
-            } else {
-              this.$router.push('/dashboard')
-            }
-          })
+        this.$store.dispatch('login', inputs).then(() => {
+          if (this.error.message) {
+            this.alert = true
+          } else {
+            this.$router.push('/dashboard')
+          }
+        })
       },
       clear() {
         this.$refs.form.reset()
       },
       hideNotif() {
         this.alert = false
-        this.$store.commit('setError', {})
+        this.$store.commit('clearError')
       }
     }
   }

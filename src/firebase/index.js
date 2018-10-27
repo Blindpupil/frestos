@@ -7,6 +7,5 @@ const db = app.database()
 
 // create database references
 const restosRef = db.ref('restaurants')
-const usersRef = db.ref('users')
 
-export { userRef, restosRef }
+export { restosRef }

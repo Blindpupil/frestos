@@ -14,12 +14,10 @@ const userInSession =  function () {
 
 export default {
   state: {
-    currentUser: '',
-    error: {}
+    currentUser: ''
   },
   getters: {
-    currentUser: state => state.currentUser,
-    error: state => state.error
+    currentUser: state => state.currentUser
   },
   actions: {
     async session({ commit }) {
@@ -55,13 +53,13 @@ export default {
         commit('setError', err)
       }
     },
-    async addUserToDb({ commit }, mergedUser) {
+    async addUserToDb({ commit }, { uid, firstName, lastName, interests, email }) {
       try {
-        await firebase.database().ref(`users/${mergedUser.uid}`).set({
-          first_name: mergedUser.first_name,
-          last_name: mergedUser.last_name,
-          interests: mergedUser.interests,
-          email: mergedUser.email
+        await firebase.database().ref(`users/${uid}`).set({
+          firstName,
+          lastName,
+          interests,
+          email
         })
       } catch (err) {
         console.error('addUserToDb action error: ', err)
@@ -82,9 +80,6 @@ export default {
     },
     setLogout(state) {
       state.currentUser = null
-    },
-    setError(state, err) {
-      state.error = err
     }
   }
 }

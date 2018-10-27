@@ -83,7 +83,7 @@
 
 <script>
   import Routes from '@/router'
-  import { mapState } from 'vuex'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'Dashboard',
@@ -91,9 +91,9 @@
       Routes
     },
     computed: {
-      ...mapState({
-        // map this.$store.state.auth.currentUser to this.user
-        user: state => state.auth.currentUser
+      ...mapGetters({
+        // map this.user to this.$store.getters.auth.currentUser
+        user: 'currentUser'
       })
     },
     data() {
@@ -125,7 +125,6 @@
 </script>
 
 <style scoped lang="scss">
-
   // TODO: create files with custom variables, mixins, etc. See https://vuetifyjs.com/en/style/colors
   $primary: lightgray;
 

@@ -23,14 +23,14 @@
               <v-flex xs12 sm6>
                 <v-text-field label="First name" required
                               hint="What did they call you at birth?"
-                              v-model="first_name" :rules="nameRules" @focus="hideNotif"
+                              v-model="firstName" :rules="nameRules" @focus="hideNotif"
                 ></v-text-field>
               </v-flex>
 
               <v-flex xs12 sm6>
                 <v-text-field label="Last name" required
                               hint="What's your dad or mom last name? (choose your favorite)"
-                              v-model="last_name" :rules="nameRules" @focus="hideNotif"
+                              v-model="lastName" :rules="nameRules" @focus="hideNotif"
                 ></v-text-field>
               </v-flex>
 
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'sign-up',
@@ -105,8 +105,8 @@
         error_alert: false,
         success_alert: false,
         valid: false,
-        first_name: '',
-        last_name: '',
+        firstName: '',
+        lastName: '',
         nameRules: [v => !!v || 'Full name is required'],
         password: '',
         passwordRules: [
@@ -121,10 +121,7 @@
       };
     },
     computed: {
-      ...mapState({
-        error: state => state.auth.error.message,
-        user: state => state.auth.currentUser
-      })
+      ...mapGetters(['error'])
     },
     methods: {
       clear() {
@@ -132,19 +129,20 @@
       },
       signUp() {
         // check if all fields are filled
-        if (this.email && this.password && this.first_name && this.last_name) {
+        if (this.email && this.password && this.firstName && this.lastName) {
           // create a new user with the provided info
           const inputs = {
             email: this.email,
             password: this.password,
-            first_name: this.first_name,
-            last_name: this.last_name,
+            firstName: this.firstName,
+            lastName: this.lastName,
             interests: this.interests
           }
           this.$store.dispatch('signup', inputs)
             .then(() => {
-              if (this.error) {
+              if (this.error.message) {
                 this.error_alert = true
+                console.error('dispatch signup error: ', this.error.message)
               } else {
                 // if user created successfully display a success message
               this.success_alert = true
@@ -161,7 +159,7 @@
       },
       hideNotif() {
         // hide all notifications
-        this.$store.commit('setError', {})
+        this.$store.commit('clearError')
         this.error_alert = false
       }
     }
