@@ -16,3 +16,9 @@ yarn-error.log*
 
 # Firebase config
 src/firebase/config.js
+
+# Keys
+src/keys.js
+
+# node version
+.node-version

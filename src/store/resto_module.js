@@ -1,20 +1,34 @@
 // Handle operations to the Restaurants reference in Firebase
 import firebase from 'firebase'
 import { firebaseAction } from 'vuexfire'
+import { restosRef, commentsRef } from '@/firebase'
+import { processCardRestaurants } from '@/store/helpers'
 
 export default {
   state: {
     currentRestaurant: '',
-    restaurants: []
+    restaurants: [],
+    cardRestaurants: []
   },
   getters: {
+    currentRestaurant: state => state.currentRestaurant,
     restaurants: state => state.restaurants,
-    currentRestaurant: state => state.currentRestaurant
+    cardRestaurants: state => state.cardRestaurants
   },
   actions: {
     setRestosRef: firebaseAction(({ bindFirebaseRef }, ref) => {
       bindFirebaseRef('restaurants', ref)
     }),
+    async getCardRestaurants({ commit, dispatch }) {
+      const restaurants = await dispatch('setRestosRef', restosRef)
+      const comments = await dispatch('setCommentsRef', commentsRef)
+
+      // eslint-disable-next-line
+      console.log(processCardRestaurants)
+      const cardRestos = processCardRestaurants(restaurants, comments)
+
+      commit('setCardRestaurants', cardRestos)
+    },
     async writeRestaurantToFb({ commit, dispatch }, inputs) {
       const { uid } = inputs
       const { restoId } = inputs
@@ -74,6 +88,9 @@ export default {
     },
     writeRestaurant(state, restaurant) {
       state.restaurants = [...state.restaurants, restaurant]
+    },
+    setCardRestaurants(state, restaurants) {
+      state.cardRestaurants = [...state.cardRestaurants, restaurants]
     }
   }
 }

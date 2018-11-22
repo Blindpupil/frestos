@@ -1,4 +1,3 @@
-/* eslint-disable */
 import Firebase from 'firebase'
 import config from './config'
 
@@ -7,5 +6,6 @@ const db = app.database()
 
 // create database references
 const restosRef = db.ref('restaurants')
+const commentsRef = db.ref('comments')
 
-export { restosRef }
+export { restosRef, commentsRef }

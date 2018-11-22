@@ -1,5 +1,6 @@
 // Handle operations to the Comments reference in Firebase
 import firebase from 'firebase'
+import { firebaseAction } from 'vuexfire'
 
 export default {
   state: {
@@ -9,6 +10,20 @@ export default {
     comments: state => state.comments
   },
   actions: {
+    setCommentsRef: firebaseAction(({ bindFirebaseRef }, ref) => {
+      bindFirebaseRef('comments', ref)
+    }),
+    async getCommentById({ commit }, commentId) {
+      try {
+        const commentRef = await firebase.database().ref(`comments/${commentId}/content`)
+        commentRef.on('value', (snap) => {
+          commit('addComment', snap.val())
+        })
+      } catch (err) {
+        console.error('getCommentsForResto action error: ', err)
+        commit('setError', err)
+      }
+    },
     async writeCommentToFb({ commit, dispatch }, comment) {
       const { commentId } = comment
       let commentKey
