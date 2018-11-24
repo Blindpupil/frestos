@@ -35,7 +35,7 @@ export default {
 
         await firebase.database().ref().update(updates, (error) => {
           if (error) {
-            console.error('writeRestaurantToFb action update fn error', error)
+            console.error('writeCommentToFb action update fn error', error)
             commit('setError', error)
           } else {
             commit('addComment', comment)
@@ -45,8 +45,8 @@ export default {
         // Every time a new comment object is added, its ID is added to the user who wrote it
         // and to the restaurant it's referring to
         if (!commentId) {
-          dispatch('addCommentToUser', commentKey)
-          dispatch('addCommentToRestaurant', commentKey)
+          await dispatch('addCommentToUser', commentKey)
+          await dispatch('addCommentToRestaurant', commentKey)
         }
       } catch (err) {
         console.error('writeCommentToFb action error: ', err)

@@ -5,7 +5,7 @@
         <v-icon>delete</v-icon>
       </v-btn>
       
-      <v-img src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg" height="200px">          
+      <v-img :src="resto.photo" height="200px">          
       </v-img>
 
       <v-card-title primary-title>
@@ -25,7 +25,7 @@
 
       <v-slide-y-transition>
         <v-card-text v-show="show">
-          {{ cardRestaurants }}
+          {{ resto.comments[0].content }}
         </v-card-text>
       </v-slide-y-transition>
     </v-card>

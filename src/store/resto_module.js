@@ -2,7 +2,7 @@
 import firebase from 'firebase'
 import { firebaseAction } from 'vuexfire'
 import { restosRef, commentsRef } from '@/firebase'
-import { processCardRestaurants } from '@/store/helpers'
+import processCardRestaurants from '@/store/utils'
 
 export default {
   state: {
@@ -13,21 +13,25 @@ export default {
   getters: {
     currentRestaurant: state => state.currentRestaurant,
     restaurants: state => state.restaurants,
-    cardRestaurants: state => state.cardRestaurants
+    cardRestaurants(state, getters, rootState) {
+      const { restaurants } = rootState.restos
+      const { comments } = rootState.comments
+
+      return processCardRestaurants(restaurants, comments)
+    }
   },
   actions: {
     setRestosRef: firebaseAction(({ bindFirebaseRef }, ref) => {
       bindFirebaseRef('restaurants', ref)
     }),
     async getCardRestaurants({ commit, dispatch }) {
-      const restaurants = await dispatch('setRestosRef', restosRef)
-      const comments = await dispatch('setCommentsRef', commentsRef)
-
-      // eslint-disable-next-line
-      console.log(processCardRestaurants)
-      const cardRestos = processCardRestaurants(restaurants, comments)
-
-      commit('setCardRestaurants', cardRestos)
+      try {
+        await dispatch('setRestosRef', restosRef)
+        await dispatch('setCommentsRef', commentsRef)
+      } catch (err) {
+        console.error('getCardRestaurants action error: ', err)
+        commit('setError', err)
+      }
     },
     async writeRestaurantToFb({ commit, dispatch }, inputs) {
       const { uid } = inputs
@@ -88,9 +92,6 @@ export default {
     },
     writeRestaurant(state, restaurant) {
       state.restaurants = [...state.restaurants, restaurant]
-    },
-    setCardRestaurants(state, restaurants) {
-      state.cardRestaurants = [...state.cardRestaurants, restaurants]
     }
   }
 }

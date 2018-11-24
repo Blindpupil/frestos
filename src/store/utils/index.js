@@ -8,12 +8,12 @@ const processCardRestaurants = (restaurants, comments) => {
 
     // Get default photo
     const photoKey = _.findKey(obj.photos, o => o.default)
-    const photo = obj.photos[photoKey]
+    const photo = obj.photos[photoKey].url
 
     const card = {
-      comments: commentObjs,
       ...obj,
-      ...photo
+      comments: commentObjs,
+      photo
     }
 
     cardRestos.push(card)
