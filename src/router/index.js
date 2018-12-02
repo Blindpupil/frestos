@@ -5,8 +5,8 @@ import store from '@/store'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Welcome from '@/components/dashboard/Welcome'
-import Restaurants from '@/components/dashboard/Restaurants'
-import Meetings from '@/components/dashboard/Meetings'
+import Restaurants from '@/components/dashboard/restaurant/Restaurants'
+import Meetings from '@/components/dashboard/meeting/Meetings'
 
 Vue.use(VueRouter)
 

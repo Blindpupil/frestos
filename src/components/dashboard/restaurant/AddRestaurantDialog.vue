@@ -1,9 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="500px">
     
-    <v-btn slot="activator" color="primary" dark>
-      <slot></slot>
-    </v-btn>
+    <slot slot="activator"></slot>
     
     <v-card>
       <v-card-title>
@@ -35,7 +33,10 @@
                 <v-text-field label="Link" v-model="link" hint="If you have it"></v-text-field>
               </v-flex>
               <v-flex xs12>
-                <v-textarea label="Comment" v-model="comment" hint= "Share your experience"></v-textarea>
+                <v-text-field label="Photo" v-model="photoUrl" hint="URL to a pic of the place if you have it"></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-textarea label="Comment" v-model="newComment" hint= "Share your experience"></v-textarea>
               </v-flex>
             </v-layout>
           </v-container>
@@ -64,52 +65,36 @@
         location: '',
         rating: '',
         link: '',
-        comment: '',
-        error_alert: false,
-        success_alert: false
+        newComment: '',
+        photoUrl: '',
       };
     },
     computed: {
-      ...mapGetters({
-        error: 'error',
-        user: 'currentUser'
-      })
+      ...mapGetters(['error', 'currentUser'])
     },
     methods: {
-      writeRestaurant() {
+      submitInfo() {
         const inputs = {
           name: this.name,
           location: this.location,
           rating: this.rating,
           link: this.link,
-          uid: this.user
-        }
-        return this.$store.dispatch('writeRestaurantToFb', inputs)
-      },
-      writeComment(restoId) {
-        const comment = {
-          content: this.comment,
-          uid: this.user,
-          restaurant: restoId
-        }
-        this.$store.dispatch('writeCommentToFb', comment)
-      },
-      submitInfo() {
-        this.writeRestaurant().then(restoId => {
-          if (this.error.message) {
-            console.error('error at submitInfo during writeRestaurant', this.error.message)
-            this.error_alert = true
-          } else {
-            // use the restaurant id to push the comment, if any
-            if (this.comment) this.writeComment(restoId)
-
-            // if resto created successfully display a success message
-            this.success_alert = true
-            // close dialog and reset fields
-            this.dialog = false
-            this.clear()
+          photoUrl: this.photoUrl,
+          photos: {
+            source: this.currentUser,
+            url: this.photoUrl,
+            default: true
+          },
+          comment: {
+            content: this.newComment,
+            uid: this.currentUser
           }
-        })
+        }
+        this.$store.dispatch('writeRestaurantToFb', inputs)
+          .then(() => {
+            this.clear()
+            this.dialog = false
+          })
       },
       clear() {
         this.$refs.form.reset();

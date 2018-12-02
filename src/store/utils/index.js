@@ -1,25 +1,36 @@
-import _ from 'lodash-es'
+import {
+  filter,
+  values,
+  flatten
+} from 'lodash-es'
 
-const processCardRestaurants = (restaurants, comments) => {
-  const cardRestos = []
+const processRestaurantsToCards = (restaurants, comments) => {
+  const restosCard = []
   restaurants.forEach((obj) => {
     // Get comments for that restaurant
-    const commentObjs = _.filter(comments, o => o.restaurant === obj['.key'])
-
-    // Get default photo
-    const photoKey = _.findKey(obj.photos, o => o.default)
-    const photo = obj.photos[photoKey].url
+    const commentObjs = filter(comments, o => o.restaurant === obj['.key'])
 
     const card = {
       ...obj,
-      comments: commentObjs,
-      photo
+      comments: commentObjs
     }
 
-    cardRestos.push(card)
+    // if (!photo) delete card.photo
+
+    restosCard.push(card)
   })
 
-  return cardRestos
+  return restosCard
 }
 
-export default processCardRestaurants
+const processUsersRestaurants = (user, restaurants) => {
+  const userRestaurantsIds = values(user.restaurants)
+  const userRestaurantsObjs = []
+  userRestaurantsIds.forEach((id) => {
+    const restaurant = filter(restaurants, o => o['.key'] === id)
+    userRestaurantsObjs.push(restaurant)
+  })
+  return flatten(userRestaurantsObjs)
+}
+
+export { processRestaurantsToCards, processUsersRestaurants }

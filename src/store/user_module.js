@@ -4,48 +4,36 @@ import { firebaseAction } from 'vuexfire'
 
 export default {
   state: {
-    userRestaurants: [],
+    userObj: '',
     userComments: []
   },
   getters: {
-    userRestaurants: state => state.userRestaurants,
-    userComments: state => state.userComments
+    userObj: state => state.userObj
   },
   actions: {
     setUserRef: firebaseAction(({ bindFirebaseRef }, ref) => {
-      bindFirebaseRef('user', ref)
+      bindFirebaseRef('userObj', ref)
     }),
     async addRestaurantToUser({ commit, getters }, restoKey) {
       const uid = getters.currentUser
       try {
         // add the restaurant to the user object
         await firebase.database().ref().child(`users/${uid}/restaurants`).push(restoKey)
-
-        commit('addToUserRestaurants', restoKey)
       } catch (err) {
         console.error('addRestaurantToUser action error: ', err)
         commit('setError', err)
       }
     },
-    async addCommentToUser({ commit, getters }, commentId) {
+    async addCommentToUser({ commit, getters }, commentKey) {
       const uid = getters.currentUser
       try {
         // add the comment to the user object
-        await firebase.database().ref().child(`users/${uid}/comments`).push(commentId)
-
-        commit('addToUserComments', commentId)
+        await firebase.database().ref().child(`users/${uid}/comments`).push(commentKey)
       } catch (err) {
         console.error('addCommentToUser: ', err)
         commit('setError', err)
       }
     }
   },
-  mutations: {
-    addToUserRestaurants(state, restaurant) {
-      state.userRestaurants = [...state.userRestaurants, restaurant]
-    },
-    addToUserComments(state, comment) {
-      state.userComments = [...state.userComments, comment]
-    }
-  }
+  mutations: {}
 }

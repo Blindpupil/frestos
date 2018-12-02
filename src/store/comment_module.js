@@ -1,17 +1,23 @@
 // Handle operations to the Comments reference in Firebase
 import firebase from 'firebase'
 import { firebaseAction } from 'vuexfire'
+import { commentsRef } from '@/firebase'
 
 export default {
   state: {
-    comments: []
+    comments: [],
+    comment: ''
   },
   getters: {
-    comments: state => state.comments
+    comments: state => state.comments,
+    comment: state => state.comment
   },
   actions: {
     setCommentsRef: firebaseAction(({ bindFirebaseRef }, ref) => {
       bindFirebaseRef('comments', ref)
+    }),
+    setCommentByIdRef: firebaseAction(({ bindFirebaseRef }, ref) => {
+      bindFirebaseRef('comment', ref)
     }),
     async getCommentById({ commit }, commentId) {
       try {
@@ -25,28 +31,26 @@ export default {
       }
     },
     async writeCommentToFb({ commit, dispatch }, comment) {
-      const { commentId } = comment
+      const commentId = comment['.key']
       let commentKey
       try {
-        commentKey = commentId || await firebase.database().ref().child('comments').push().key
-        const updates = {}
+        commentKey = commentId || await commentsRef.push().key
 
-        updates[`/comments/${commentKey}`] = comment
+        // You have to remove the .key from the comment before pushing it
+        // eslint-disable-next-line
+        if (commentId) delete comment['.key']
 
-        await firebase.database().ref().update(updates, (error) => {
+        await commentsRef.child(commentKey).update(comment, (error) => {
           if (error) {
             console.error('writeCommentToFb action update fn error', error)
             commit('setError', error)
-          } else {
-            commit('addComment', comment)
           }
         })
 
         // Every time a new comment object is added, its ID is added to the user who wrote it
-        // and to the restaurant it's referring to
+        // and to the restaurant it's referring to (done in resto module)
         if (!commentId) {
           await dispatch('addCommentToUser', commentKey)
-          await dispatch('addCommentToRestaurant', commentKey)
         }
       } catch (err) {
         console.error('writeCommentToFb action error: ', err)

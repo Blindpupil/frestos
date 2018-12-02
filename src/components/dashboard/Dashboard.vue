@@ -72,9 +72,7 @@
     <v-content>
       <v-container fill-height>
         <v-layout justify-center align-center>
-          <v-flex shrink>
-            <router-view></router-view>
-          </v-flex>
+          <router-view></router-view>
         </v-layout>
       </v-container>
     </v-content>
