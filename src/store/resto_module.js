@@ -80,7 +80,7 @@ export default {
           } else {
             // TODO: use it as default: needs to set all other pics as default: false
             newPhoto = {
-              default: true,
+              main: true,
               source: currentUser,
               url: inputs.photoUrl
             }

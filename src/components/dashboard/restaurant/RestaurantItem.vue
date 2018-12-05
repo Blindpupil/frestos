@@ -89,7 +89,7 @@
         }
       },
       photoUrl() {
-        const cardsDefault = find(this.card.photos, o => o.default)
+        const cardsDefault = find(this.card.photos, o => o.main)
 
         if (isEmpty(cardsDefault)) {
           return 'https://via.placeholder.com/500x200.png?text=No+pics+here+...yet!'
