@@ -33,7 +33,7 @@
                 <v-text-field label="Link" v-model="link" hint="If you have it"></v-text-field>
               </v-flex>
               <v-flex xs12>
-                <v-text-field label="Photo" v-model="photoUrl" hint="URL to a pic of the place if you have it"></v-text-field>
+                <v-text-field label="Photo" v-model="newPhotoUrl" hint="URL to a pic of the place if you have it"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-textarea label="Comment" v-model="newComment" hint= "Share your experience"></v-textarea>
@@ -54,6 +54,9 @@
 
 <script>
   import { mapGetters } from 'vuex'
+  import { WRITE_RESTO_TO_FB } from '@/store/types/action_types'
+  import { CLEAR_ERROR } from '@/store/types/mutation_types'
+  
 
   export default {
     name: 'add-restaurant-dialog',
@@ -66,7 +69,7 @@
         rating: '',
         link: '',
         newComment: '',
-        photoUrl: '',
+        newPhotoUrl: '',
       };
     },
     computed: {
@@ -79,18 +82,18 @@
           location: this.location,
           rating: this.rating,
           link: this.link,
-          photoUrl: this.photoUrl,
+          newPhotoUrl: this.newPhotoUrl,
           photos: {
             source: this.currentUser,
-            url: this.photoUrl,
-            default: true
+            url: this.newPhotoUrl,
+            main: true
           },
           comment: {
             content: this.newComment,
             uid: this.currentUser
           }
         }
-        this.$store.dispatch('writeRestaurantToFb', inputs)
+        this.$store.dispatch(WRITE_RESTO_TO_FB, inputs)
           .then(() => {
             this.clear()
             this.dialog = false
@@ -101,7 +104,7 @@
       },
       hideNotif() {
         // hide all notifications
-        this.$store.commit('clearError')
+        this.$store.commit(CLEAR_ERROR)
         this.error_alert = false
       }
     }

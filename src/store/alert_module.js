@@ -1,4 +1,9 @@
 // Handle errors and alerts
+import {
+  CLEAR_ERROR,
+  SET_ERROR,
+  SET_SUCCESS
+} from '@/store/types/mutation_types'
 
 export default {
   state: {
@@ -11,13 +16,13 @@ export default {
   },
   actions: {},
   mutations: {
-    setError(state, err) {
+    [SET_ERROR](state, err) {
       state.error = err
     },
-    setSuccess(state, message) {
+    [SET_SUCCESS](state, message) {
       state.success = message
     },
-    clearError(state) {
+    [CLEAR_ERROR](state) {
       state.error = {}
     }
   }

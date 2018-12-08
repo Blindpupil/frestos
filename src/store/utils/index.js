@@ -15,8 +15,6 @@ const processRestaurantsToCards = (restaurants, comments) => {
       comments: commentObjs
     }
 
-    // if (!photo) delete card.photo
-
     restosCard.push(card)
   })
 

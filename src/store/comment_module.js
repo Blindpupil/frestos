@@ -1,7 +1,12 @@
 // Handle operations to the Comments reference in Firebase
-import firebase from 'firebase'
 import { firebaseAction } from 'vuexfire'
 import { commentsRef } from '@/firebase'
+import {
+  SET_COMMENTS_REF,
+  WRITE_COMMENT_TO_FB,
+  ADD_COMMENT_TO_USER
+} from '@/store/types/action_types'
+import { SET_ERROR } from '@/store/types/mutation_types'
 
 export default {
   state: {
@@ -13,55 +18,36 @@ export default {
     comment: state => state.comment
   },
   actions: {
-    setCommentsRef: firebaseAction(({ bindFirebaseRef }, ref) => {
+    [SET_COMMENTS_REF]: firebaseAction(({ bindFirebaseRef }, ref) => {
       bindFirebaseRef('comments', ref)
     }),
-    setCommentByIdRef: firebaseAction(({ bindFirebaseRef }, ref) => {
-      bindFirebaseRef('comment', ref)
-    }),
-    async getCommentById({ commit }, commentId) {
-      try {
-        const commentRef = await firebase.database().ref(`comments/${commentId}/content`)
-        commentRef.on('value', (snap) => {
-          commit('addComment', snap.val())
-        })
-      } catch (err) {
-        console.error('getCommentsForResto action error: ', err)
-        commit('setError', err)
-      }
-    },
-    async writeCommentToFb({ commit, dispatch }, comment) {
+    async [WRITE_COMMENT_TO_FB]({ commit, dispatch }, comment) {
       const commentId = comment['.key']
+      const { isNew } = comment
+
+      const newComment = {
+        content: comment.content,
+        restaurant: comment.restaurant,
+        uid: comment.uid
+      }
+
       let commentKey
       try {
         commentKey = commentId || await commentsRef.push().key
 
-        // You have to remove the .key from the comment before pushing it
-        // eslint-disable-next-line
-        if (commentId) delete comment['.key']
-
-        await commentsRef.child(commentKey).update(comment, (error) => {
-          if (error) {
-            console.error('writeCommentToFb action update fn error', error)
-            commit('setError', error)
-          }
-        })
+        await commentsRef.child(commentKey).update(newComment)
 
         // Every time a new comment object is added, its ID is added to the user who wrote it
-        // and to the restaurant it's referring to (done in resto module)
-        if (!commentId) {
-          await dispatch('addCommentToUser', commentKey)
+        // and to the restaurant it's referring to but thats already handled in resto_module
+        if (isNew) {
+          await dispatch(ADD_COMMENT_TO_USER, commentKey)
         }
       } catch (err) {
         console.error('writeCommentToFb action error: ', err)
-        commit('setError', err)
+        commit(SET_ERROR, err)
       }
       return commentKey
     }
   },
-  mutations: {
-    addComment(state, comment) {
-      state.comments = [...state.comments, comment]
-    }
-  }
+  mutations: {}
 }

@@ -1,6 +1,12 @@
 // Handle operations to the Users reference in Firebase
-import firebase from 'firebase'
 import { firebaseAction } from 'vuexfire'
+import { usersRef } from '@/firebase'
+import {
+  SET_USER_REF,
+  ADD_RESTO_TO_USER,
+  ADD_COMMENT_TO_USER
+} from '@/store/types/action_types'
+import { SET_ERROR } from '@/store/types/mutation_types'
 
 export default {
   state: {
@@ -11,27 +17,27 @@ export default {
     userObj: state => state.userObj
   },
   actions: {
-    setUserRef: firebaseAction(({ bindFirebaseRef }, ref) => {
+    [SET_USER_REF]: firebaseAction(({ bindFirebaseRef }, ref) => {
       bindFirebaseRef('userObj', ref)
     }),
-    async addRestaurantToUser({ commit, getters }, restoKey) {
+    async [ADD_RESTO_TO_USER]({ commit, getters }, restoKey) {
       const uid = getters.currentUser
       try {
         // add the restaurant to the user object
-        await firebase.database().ref().child(`users/${uid}/restaurants`).push(restoKey)
+        await usersRef.child(`${uid}/restaurants`).push(restoKey)
       } catch (err) {
         console.error('addRestaurantToUser action error: ', err)
-        commit('setError', err)
+        commit(SET_ERROR, err)
       }
     },
-    async addCommentToUser({ commit, getters }, commentKey) {
+    async [ADD_COMMENT_TO_USER]({ commit, getters }, commentKey) {
       const uid = getters.currentUser
       try {
         // add the comment to the user object
-        await firebase.database().ref().child(`users/${uid}/comments`).push(commentKey)
+        await usersRef.child(`${uid}/comments`).push(commentKey)
       } catch (err) {
         console.error('addCommentToUser: ', err)
-        commit('setError', err)
+        commit(SET_ERROR, err)
       }
     }
   },

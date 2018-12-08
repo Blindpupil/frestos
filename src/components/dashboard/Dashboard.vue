@@ -82,6 +82,7 @@
 <script>
   import Routes from '@/router'
   import { mapGetters } from 'vuex'
+  import { LOGOUT } from '@/store/types/action_types'
 
   export default {
     name: 'Dashboard',
@@ -115,7 +116,7 @@
         this.$router.push(link)
       },
       logout() {
-        this.$store.dispatch('logout')
+        this.$store.dispatch(LOGOUT)
         this.$router.push('/login')
       }
     }

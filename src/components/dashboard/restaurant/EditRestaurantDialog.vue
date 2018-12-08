@@ -37,7 +37,7 @@
                 <v-text-field label="Link" v-model="link" hint="If you have it"></v-text-field>
               </v-flex>
               <v-flex xs12>
-                <v-text-field label="Photo" v-model="photoUrl" hint="URL to a pic of the place if you have it"></v-text-field>
+                <v-text-field label="Photo" v-model="newPhotoUrl" hint="URL to a pic of the place if you have it"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-textarea 
@@ -63,6 +63,7 @@
 <script>
   import { isEmpty } from 'lodash-es'
   import { mapGetters } from 'vuex'
+  import { WRITE_RESTO_TO_FB } from '@/store/types/action_types'
 
   export default {
     name: 'edit-restaurant-dialog',
@@ -80,7 +81,7 @@
         rating: this.card.rating,
         link: this.card.link,
         photos: this.card.photos,
-        photoUrl: ''
+        newPhotoUrl: ''
       }
     },
     computed: {
@@ -95,8 +96,8 @@
           location: this.location,
           rating: this.rating,
           link: this.link,
-          photos: this.photos,
-          photoUrl: this.photoUrl,
+          newPhotoUrl: this.newPhotoUrl,
+          photos: this.card.photos,
           comment: {
             '.key': this.previousComment['.key'],
             restaurant: this.card['.key'],
@@ -105,7 +106,7 @@
           }
         }
 
-        this.$store.dispatch('writeRestaurantToFb', inputs)
+        this.$store.dispatch(WRITE_RESTO_TO_FB, inputs)
           .then(() => this.dialog = false)
       },
       clear() {

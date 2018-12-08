@@ -19,6 +19,7 @@
 <script>
   import { mapGetters } from 'vuex'
   import RestaurantItem from '@/components/dashboard/restaurant/RestaurantItem'
+  import { GET_RESTOS_CARDS } from '@/store/types/action_types'
 
   export default {
     name: 'restaurant-list',
@@ -29,7 +30,7 @@
       ...mapGetters(['userRestaurantCards'])
     },
     created() {
-      this.$store.dispatch('getRestaurantCards')
+      this.$store.dispatch(GET_RESTOS_CARDS)
     }
   };
 </script>

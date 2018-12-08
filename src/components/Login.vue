@@ -39,6 +39,9 @@
 <script>
   import { mapGetters } from 'vuex'
   import signup from '@/components/Signup'
+  import { LOGIN } from '@/store/types/action_types'
+  import { CLEAR_ERROR } from '@/store/types/mutation_types'
+
 
   export default {
     name: 'log-in',
@@ -63,7 +66,7 @@
           email: this.email,
           password: this.password
         }
-        this.$store.dispatch('login', inputs).then(() => {
+        this.$store.dispatch(LOGIN, inputs).then(() => {
           if (this.error.message) {
             this.alert = true
           } else {
@@ -76,7 +79,7 @@
       },
       hideNotif() {
         this.alert = false
-        this.$store.commit('clearError')
+        this.$store.commit(CLEAR_ERROR)
       }
     }
   }

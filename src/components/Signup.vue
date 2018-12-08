@@ -90,6 +90,8 @@
 
 <script>
   import { mapGetters } from 'vuex'
+  import { SIGN_UP } from '@/store/types/action_types'
+  import { SET_ERROR, CLEAR_ERROR } from '@/store/types/mutation_types'
 
   export default {
     name: 'sign-up',
@@ -138,7 +140,7 @@
             lastName: this.lastName,
             interests: this.interests
           }
-          this.$store.dispatch('signup', inputs)
+          this.$store.dispatch(SIGN_UP, inputs)
             .then(() => {
               if (this.error.message) {
                 this.error_alert = true
@@ -153,13 +155,13 @@
             code: 'Empty Fields',
             message: 'Fill in all required fields please and thank you'
           }
-          this.$store.commit('setError', error)
+          this.$store.commit(SET_ERROR, error)
           this.error_alert = true
         }
       },
       hideNotif() {
         // hide all notifications
-        this.$store.commit('clearError')
+        this.$store.commit(CLEAR_ERROR)
         this.error_alert = false
       }
     }

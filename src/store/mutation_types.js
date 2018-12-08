@@ -1,5 +1,0 @@
-export const SET_CURRENT_RESTAURANT = 'setCurrentRestaurant'
-export const WRITE_RESTAURANT = 'writeRestaurant'
-export const ADD_COMMENT = 'addComment'
-export const SET_ERROR = 'setError'
-export const CLEAR_ERROR = 'clearError'

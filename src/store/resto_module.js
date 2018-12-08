@@ -1,17 +1,25 @@
 // Handle operations to the Restaurants reference in Firebase
-import firebase from 'firebase'
+
 import { firebaseAction } from 'vuexfire'
-import {
-  values,
-  findKey,
-  isEmpty
-} from 'lodash-es'
+import { isEmpty } from 'lodash-es'
 import {
   restosRef,
   commentsRef,
   refById
 } from '@/firebase'
 import { processRestaurantsToCards, processUsersRestaurants } from '@/store/utils'
+import { createRestaurant } from '@/models/Restaurant'
+import {
+  SET_RESTOS_REF,
+  WRITE_RESTO_TO_FB,
+  ADD_RESTO_TO_USER,
+  WRITE_COMMENT_TO_FB,
+  ADD_COMMENT_TO_RESTO,
+  GET_RESTOS_CARDS,
+  SET_USER_REF,
+  SET_COMMENTS_REF
+} from '@/store/types/action_types'
+import { SET_ERROR } from '@/store/types/mutation_types'
 
 export default {
   state: {
@@ -34,105 +42,69 @@ export default {
     }
   },
   actions: {
-    setRestosRef: firebaseAction(({ bindFirebaseRef }, ref) => {
+    [SET_RESTOS_REF]: firebaseAction(({ bindFirebaseRef }, ref) => {
       bindFirebaseRef('restaurants', ref)
     }),
-    async writeRestaurantToFb({ commit, getters, dispatch }, inputs) {
+    async [WRITE_RESTO_TO_FB]({ dispatch, getters, commit }, inputs) {
       const { currentUser } = getters
-      const restoKey = inputs['.key'] || await restosRef.push().key
       const { comment } = inputs
-      const updates = {}
 
       try {
-        updates.link = inputs.link
-        updates.location = inputs.location
-        updates.name = inputs.name
+        const restoKey = inputs['.key'] || await restosRef.push().key
 
-        // Hanlde comment
-        // if it's a new comment, we need to send it with the resto key
-        if (isEmpty(comment['.key'])) {
-          comment.restaurant = restoKey
-        }
-        // Check if the user added some content in the comment
-        if (!isEmpty(comment.content)) {
-          const commentKey = await dispatch('writeCommentToFb', comment)
-
-          // If the user didn't already have a comment in that resto, add it
-          if (isEmpty(comment['.key'])) {
-            const restoCommentKey = await restosRef.child(`${restoKey}/comments`).push().key
-            updates[`comments/${restoCommentKey}`] = commentKey
-          }
+        // Handle comment
+        const commentInfo = {
+          isNew: !comment['.key'],
+          hasContent: !isEmpty(comment.content)
         }
 
-        // Handle photo
-        let newPhoto
-        let userPhotoKey
-        // Check if user submited a new photo
-        if (!isEmpty(inputs.photoUrl)) {
-          // See if the user already has a photo for that restaurant
-          userPhotoKey = findKey(inputs.photos, o => o.source === currentUser)
-          const oldPhoto = inputs.photos[userPhotoKey]
-          if (userPhotoKey) {
-            newPhoto = {
-              ...oldPhoto,
-              url: inputs.photoUrl
-            }
-          } else {
-            // TODO: use it as default: needs to set all other pics as default: false
-            newPhoto = {
-              main: true,
-              source: currentUser,
-              url: inputs.photoUrl
-            }
-          }
-
-          const newPhotoKey = userPhotoKey || await restosRef.child(`${restoKey}/photos`).push().key
-
-          updates[`photos/${newPhotoKey}`] = newPhoto
+        let commentId
+        if (commentInfo.hasContent) {
+          commentId = comment['.key'] || await commentsRef.push().key
         }
 
-        // TODO: We'll deal with rating later
-        updates.rating = inputs.rating
+        comment['.key'] = commentId
 
-        // Handle user
-        const userIds = values(inputs.users)
-        const match = userIds.includes(currentUser)
-
-        let restaurantUserKey
-        if (!match) {
-          // If the restaurant doesn't have the user, we'll need to add it
-          restaurantUserKey = await restosRef.child(`${restoKey}/users`).push().key
-          updates[`users/${restaurantUserKey}`] = currentUser
+        const data = {
+          ...inputs,
+          comment,
+          commentInfo
         }
 
-        // If it's a new restaurant, add it to the user
-        if (!inputs['.key']) await dispatch('addRestaurantToUser', restoKey)
+        const updates = await createRestaurant(data, restoKey, currentUser)
 
-        // Our new restaurant object is done
+        // Dispatch operations affecting firebase entries different than restuarant
+        // if resto is new, add restaurant to user
+        if (!inputs['.key']) await dispatch(ADD_RESTO_TO_USER, restoKey)
+
+        // edit comment, if there's any
+        if (commentInfo.hasContent) {
+          await dispatch(WRITE_COMMENT_TO_FB, Object.assign(comment, commentInfo))
+        }
+
         await restosRef.child(restoKey).update(updates)
       } catch (err) {
         console.error('writeRestaurantToFb: ', err)
-        commit('setError', err)
+        commit(SET_ERROR, err)
       }
-      return restoKey
     },
-    async addCommentToRestaurant({ commit }, commentId, restoId) {
+    async [ADD_COMMENT_TO_RESTO]({ commit }, commentId, restoId) {
       try {
         // add the comment to the restaurant object
-        await firebase.database().ref().child(`restaurants/${restoId}/comments`).push(commentId)
+        await restosRef.child(`${restoId}/comments`).push(commentId)
       } catch (err) {
         console.error('addCommentToUser: ', err)
-        commit('setError', err)
+        commit(SET_ERROR, err)
       }
     },
-    async getRestaurantCards({ commit, getters, dispatch }) {
+    async [GET_RESTOS_CARDS]({ commit, getters, dispatch }) {
       try {
-        await dispatch('setUserRef', refById('users', getters.currentUser))
-        await dispatch('setRestosRef', restosRef)
-        await dispatch('setCommentsRef', commentsRef)
+        await dispatch(SET_USER_REF, refById('users', getters.currentUser))
+        await dispatch(SET_RESTOS_REF, restosRef)
+        await dispatch(SET_COMMENTS_REF, commentsRef)
       } catch (err) {
         console.error('getCardRestaurants action error: ', err)
-        commit('setError', err)
+        commit(SET_ERROR, err)
       }
     }
   },
