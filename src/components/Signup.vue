@@ -61,12 +61,12 @@
 
               <!--// Alert -->
               <v-alert outline type="error" dismissible v-model="error_alert" transition="slide-x-transition">
-                {{ error }}
+                {{ error.message }}
               </v-alert>
 
               <v-alert outline type="success" dismissible v-model="success_alert" transition="slide-x-transition">
-                You have successfully signed up. Check out your
-                <router-link to="/dashboard">Dashboard</router-link>
+                {{ success }}
+                Go check out your <router-link to="/dashboard">Dashboard</router-link>!
               </v-alert>
 
             </v-layout>
@@ -90,8 +90,13 @@
 
 <script>
   import { mapGetters } from 'vuex'
+  import { isEmpty } from 'lodash-es'
   import { SIGN_UP } from '@/store/types/action_types'
-  import { SET_ERROR, CLEAR_ERROR } from '@/store/types/mutation_types'
+  import {
+    SET_ERROR,
+    CLEAR_ERROR,
+    SET_SUCCESS
+  } from '@/store/types/mutation_types'
 
   export default {
     name: 'sign-up',
@@ -123,7 +128,7 @@
       };
     },
     computed: {
-      ...mapGetters(['error'])
+      ...mapGetters(['error', 'success'])
     },
     methods: {
       clear() {
@@ -142,12 +147,12 @@
           }
           this.$store.dispatch(SIGN_UP, inputs)
             .then(() => {
-              if (this.error.message) {
+              if (!isEmpty(this.error.message)) {
                 this.error_alert = true
-                console.error('dispatch signup error: ', this.error.message)
               } else {
                 // if user created successfully display a success message
-              this.success_alert = true
+                this.$store.commit(SET_SUCCESS, 'Sign up successful!')
+                this.success_alert = true
               }
             })
         } else {

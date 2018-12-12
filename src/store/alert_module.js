@@ -7,7 +7,7 @@ import {
 
 export default {
   state: {
-    error: {},
+    error: { code: '', message: '' },
     success: ''
   },
   getters: {
@@ -16,14 +16,14 @@ export default {
   },
   actions: {},
   mutations: {
-    [SET_ERROR](state, err) {
-      state.error = err
-    },
     [SET_SUCCESS](state, message) {
       state.success = message
     },
     [CLEAR_ERROR](state) {
       state.error = {}
+    },
+    [SET_ERROR](state, err) {
+      state.error = err
     }
   }
 }

@@ -10,15 +10,14 @@
             :append-icon="show ? 'visibility_off' : 'visibility'"
             :type="show ? 'text' : 'password'"
             @click:append="show = !show"
+            v-model="password"
             name="password" label="Password" hint="At least 6 characters" 
             class="input-group--focused"
           ></v-text-field>
 
-          <v-btn @click="login">
-            login
-          </v-btn>
+          <v-btn @click="login"> login </v-btn>
 
-          <v-btn @click="clear">clear</v-btn>
+          <v-btn @click="clear"> clear </v-btn>
 
           <!--// Dialog-->
           <signup btnclass="blue-grey">
@@ -38,9 +37,10 @@
 
 <script>
   import { mapGetters } from 'vuex'
+  import { isEmpty } from 'lodash-es'
   import signup from '@/components/Signup'
   import { LOGIN } from '@/store/types/action_types'
-  import { CLEAR_ERROR } from '@/store/types/mutation_types'
+  import { SET_ERROR, CLEAR_ERROR } from '@/store/types/mutation_types'
 
 
   export default {
@@ -50,15 +50,15 @@
     },
     data() {
       return {
-        alert: false,
         email: '',
         password: '',
         show: false,
+        alert: false
       }
     },
     computed: {
-      // map this.$store.getters.errors.error.message to this.error
-      ...mapGetters(['error'])
+      // map this.$store.getters.errors.error to this.error
+      ...mapGetters(['error', 'currentUser'])
     },
     methods: {
       login() {
@@ -66,13 +66,14 @@
           email: this.email,
           password: this.password
         }
-        this.$store.dispatch(LOGIN, inputs).then(() => {
-          if (this.error.message) {
-            this.alert = true
-          } else {
-            this.$router.push('/dashboard')
-          }
-        })
+        this.$store.dispatch(LOGIN, inputs)
+          .then(() => {
+            if (isEmpty(this.currentUser)) {
+              this.alert = true
+            } else {
+              this.$router.push('/dashboard')
+            }
+          })
       },
       clear() {
         this.$refs.form.reset()

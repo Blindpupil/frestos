@@ -39,8 +39,8 @@ export default {
         user = await userInSession()
         commit(SET_USER, user)
       } catch (err) {
-        console.error('error in session', err)
         commit(SET_ERROR, err)
+        console.error('error in session.', err)
       }
     },
     async [SIGN_UP]({ commit, dispatch }, inputs) {
