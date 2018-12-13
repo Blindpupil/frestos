@@ -1,12 +1,14 @@
 <template>
-  <v-flex>
-    <h2>Content meetings</h2>
+  <v-layout justify-center align-center>
+    <v-flex>
+      <h2>Content meetings</h2>
 
-    <div>
-      <v-date-picker v-model="datepicker" :reactive="reactive"></v-date-picker>
-      <v-time-picker v-model="timepicker" :reactive="reactive"></v-time-picker>
-    </div>
-  </v-flex>
+      <div>
+        <v-date-picker v-model="datepicker" :reactive="reactive"></v-date-picker>
+        <v-time-picker v-model="timepicker" :reactive="reactive"></v-time-picker>
+      </div>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>

@@ -1,63 +1,56 @@
 <template>
-  <v-layout row class="mb-3">
-    <v-flex xs12 sm6>
-      <v-card>
+  <v-flex xs12 sm6 md4>
+    <v-card>
+      <v-img class="white--text" height="200px" :src="photoUrl">
+        <v-container fill-height fluid class="card-edit">
+          <v-layout fill-height>
+            <v-flex xs12 align-end flexbox>
+              <v-menu bottom right>
+                <v-btn slot="activator" dark icon>
+                  <v-icon>more_vert</v-icon>
+                </v-btn>
 
-        <v-img
-          class="white--text"
-          height="200px"
-          :src="photoUrl"
-        >
-          <v-container fill-height fluid class="card-edit">
-            <v-layout fill-height>
-              <v-flex xs12 align-end flexbox>
-                <v-menu bottom right>
-                  <v-btn slot="activator" dark icon>
-                    <v-icon>more_vert</v-icon>
-                  </v-btn>
+                <v-list>        
+                  <edit-restaurant-dialog :card="card" :previousComment="comment">
+                    Edit
+                  </edit-restaurant-dialog>
 
-                  <v-list>        
-                    <edit-restaurant-dialog :card="card" :previousComment="comment">
-                      Edit
-                    </edit-restaurant-dialog>
+                  <v-list-tile @click="deleteResto()">
+                    <v-list-tile-title>
+                      Delete
+                    </v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-img>
 
-                    <v-list-tile @click="deleteResto()">
-                      <v-list-tile-title>
-                        Delete
-                      </v-list-tile-title>
-                    </v-list-tile>
-                  </v-list>
-                </v-menu>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-img>
+      <v-card-title>
+        <div>
+          <span class="grey--text">Friends rating: {{ card.rating }}</span><br>
+          <h3>{{ card.name }}</h3><br>
+          <span>{{ card.location }}</span>
+        </div>
+      </v-card-title>
 
-        <v-card-title>
-          <div>
-            <span class="grey--text">Friends rating: {{ card.rating }}</span><br>
-            <h3>{{ card.name }}</h3><br>
-            <span>{{ card.location }}</span>
-          </div>
-        </v-card-title>
+      <v-card-actions>
+        <v-btn flat color="purple">Comments</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="show = !show">
+          <v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
+        </v-btn>
+      </v-card-actions>
 
-        <v-card-actions>
-          <v-btn flat color="purple">Comments</v-btn>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="show = !show">
-            <v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
-          </v-btn>
-        </v-card-actions>
+      <v-slide-y-transition>
+        <v-card-text v-show="show">
+          <div> {{ comment.content }} </div>
+        </v-card-text>
+      </v-slide-y-transition>
 
-        <v-slide-y-transition>
-          <v-card-text v-show="show">
-            <div> {{ comment.content }} </div>
-          </v-card-text>
-        </v-slide-y-transition>
-
-      </v-card>
-    </v-flex>
-  </v-layout>
+    </v-card>
+  </v-flex>
 </template>
 
 <script>
