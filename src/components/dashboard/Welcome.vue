@@ -1,5 +1,5 @@
 <template>
-  <div>     
+  <v-flex>
     <h1>Welcome to your Dashboard!</h1>
     <p>Here you can:</p>
     <ul>
@@ -7,15 +7,12 @@
       <li> add new friends to see their reviews and activities</li>
       <li> create meetings with your friends to visit these restaurants together </li>
     </ul>
-  </div>
+  </v-flex>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-
   export default {
-    name: 'restaurants',
-    computed: mapGetters(['restaurants']),
+    name: 'welcome',
     data() {
       return {};
     }

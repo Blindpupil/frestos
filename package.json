@@ -17,7 +17,7 @@
     "lodash-es": "^4.17.10",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "vuetify": "^1.0.19",
+    "vuetify": "^1.2.9",
     "vuex": "^3.0.1",
     "vuexfire": "^2.3.0"
   },
@@ -87,7 +87,7 @@
     "webpack-merge": "^4.1.0"
   },
   "engines": {
-    "node": "8.9.1",
+    "node": "9.2.0",
     "npm": ">= 3.0.0"
   },
   "browserslist": [

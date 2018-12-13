@@ -62,7 +62,7 @@
           placeholder="Search..."
           single-line
           append-icon="search"
-          :append-icon-cb="() => {}"
+          @click:append="() => {}"
           color="white"
           hide-details
         ></v-text-field>
@@ -72,9 +72,7 @@
     <v-content>
       <v-container fill-height>
         <v-layout justify-center align-center>
-          <v-flex shrink>
-            <router-view></router-view>
-          </v-flex>
+          <router-view></router-view>
         </v-layout>
       </v-container>
     </v-content>
@@ -83,7 +81,8 @@
 
 <script>
   import Routes from '@/router'
-  import { mapState } from 'vuex'
+  import { mapGetters } from 'vuex'
+  import { LOGOUT } from '@/store/types/action_types'
 
   export default {
     name: 'Dashboard',
@@ -91,9 +90,9 @@
       Routes
     },
     computed: {
-      ...mapState({
-        // map this.$store.state.auth.currentUser to this.user
-        user: state => state.auth.currentUser
+      ...mapGetters({
+        // map this.user to this.$store.getters.auth.currentUser
+        user: 'currentUser'
       })
     },
     data() {
@@ -117,7 +116,7 @@
         this.$router.push(link)
       },
       logout() {
-        this.$store.dispatch('logout')
+        this.$store.dispatch(LOGOUT)
         this.$router.push('/login')
       }
     }
@@ -125,7 +124,6 @@
 </script>
 
 <style scoped lang="scss">
-
   // TODO: create files with custom variables, mixins, etc. See https://vuetifyjs.com/en/style/colors
   $primary: lightgray;
 

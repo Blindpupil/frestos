@@ -27,7 +27,6 @@ module.exports = {
   // add your custom rules here
   rules: {
     'comma-dangle': ['error', 'never'],
-    'semi': ['error', 'never'],
     'func-names': ["error", "as-needed"],
     'semi': ['error', 'never'],
     'no-console': ["error", { allow: ["warn", "error", "info"] }],

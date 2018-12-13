@@ -23,14 +23,14 @@
               <v-flex xs12 sm6>
                 <v-text-field label="First name" required
                               hint="What did they call you at birth?"
-                              v-model="first_name" :rules="nameRules" @focus="hideNotif"
+                              v-model="firstName" :rules="nameRules" @focus="hideNotif"
                 ></v-text-field>
               </v-flex>
 
               <v-flex xs12 sm6>
                 <v-text-field label="Last name" required
                               hint="What's your dad or mom last name? (choose your favorite)"
-                              v-model="last_name" :rules="nameRules" @focus="hideNotif"
+                              v-model="lastName" :rules="nameRules" @focus="hideNotif"
                 ></v-text-field>
               </v-flex>
 
@@ -49,24 +49,24 @@
               </v-flex>
 
               <v-flex xs12>
-                <v-select
+                <v-autocomplete
                   :items="['Restaurants', 'Patisseries', 'E-sports', 'Real sports', 'Trolling']"
                   v-model="interests"
                   label="Interests"
                   multiple
                   autocomplete
                   chips
-                ></v-select>
+                ></v-autocomplete>
               </v-flex>
 
               <!--// Alert -->
               <v-alert outline type="error" dismissible v-model="error_alert" transition="slide-x-transition">
-                {{ error }}
+                {{ error.message }}
               </v-alert>
 
               <v-alert outline type="success" dismissible v-model="success_alert" transition="slide-x-transition">
-                You have successfully signed up. Check out your
-                <router-link to="/dashboard">Dashboard</router-link>
+                {{ success }}
+                Go check out your <router-link to="/dashboard">Dashboard</router-link>!
               </v-alert>
 
             </v-layout>
@@ -89,7 +89,14 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import { mapGetters } from 'vuex'
+  import { isEmpty } from 'lodash-es'
+  import { SIGN_UP } from '@/store/types/action_types'
+  import {
+    SET_ERROR,
+    CLEAR_ERROR,
+    SET_SUCCESS
+  } from '@/store/types/mutation_types'
 
   export default {
     name: 'sign-up',
@@ -105,8 +112,8 @@
         error_alert: false,
         success_alert: false,
         valid: false,
-        first_name: '',
-        last_name: '',
+        firstName: '',
+        lastName: '',
         nameRules: [v => !!v || 'Full name is required'],
         password: '',
         passwordRules: [
@@ -121,10 +128,7 @@
       };
     },
     computed: {
-      ...mapState({
-        error: state => state.auth.error.message,
-        user: state => state.auth.currentUser
-      })
+      ...mapGetters(['error', 'success'])
     },
     methods: {
       clear() {
@@ -132,22 +136,23 @@
       },
       signUp() {
         // check if all fields are filled
-        if (this.email && this.password && this.first_name && this.last_name) {
+        if (this.email && this.password && this.firstName && this.lastName) {
           // create a new user with the provided info
           const inputs = {
             email: this.email,
             password: this.password,
-            first_name: this.first_name,
-            last_name: this.last_name,
+            firstName: this.firstName,
+            lastName: this.lastName,
             interests: this.interests
           }
-          this.$store.dispatch('signup', inputs)
+          this.$store.dispatch(SIGN_UP, inputs)
             .then(() => {
-              if (this.error) {
+              if (!isEmpty(this.error.message)) {
                 this.error_alert = true
               } else {
                 // if user created successfully display a success message
-              this.success_alert = true
+                this.$store.commit(SET_SUCCESS, 'Sign up successful!')
+                this.success_alert = true
               }
             })
         } else {
@@ -155,13 +160,13 @@
             code: 'Empty Fields',
             message: 'Fill in all required fields please and thank you'
           }
-          this.$store.commit('setError', error)
+          this.$store.commit(SET_ERROR, error)
           this.error_alert = true
         }
       },
       hideNotif() {
         // hide all notifications
-        this.$store.commit('setError', {})
+        this.$store.commit(CLEAR_ERROR)
         this.error_alert = false
       }
     }
