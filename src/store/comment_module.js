@@ -4,7 +4,9 @@ import { commentsRef } from '@/firebase'
 import {
   SET_COMMENTS_REF,
   WRITE_COMMENT_TO_FB,
-  ADD_COMMENT_TO_USER
+  ADD_COMMENT_TO_USER,
+  DELETE_COMMENT,
+  DELETE_COMMENT_FROM_RESTO
 } from '@/store/types/action_types'
 import { SET_ERROR } from '@/store/types/mutation_types'
 
@@ -47,6 +49,15 @@ export default {
         commit(SET_ERROR, err)
       }
       return commentKey
+    },
+    async [DELETE_COMMENT]({ commit, dispatch }, { restoKey, commentKey }) {
+      try {
+        await commentsRef.child(commentKey).remove()
+        await dispatch(DELETE_COMMENT_FROM_RESTO, { restoKey, commentKey })
+      } catch (err) {
+        console.error(DELETE_COMMENT, err)
+        commit(SET_ERROR, err)
+      }
     }
   },
   mutations: {}

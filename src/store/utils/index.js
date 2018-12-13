@@ -4,7 +4,7 @@ import {
   flatten
 } from 'lodash-es'
 
-const processRestaurantsToCards = (restaurants, comments) => {
+export const processRestaurantsToCards = (restaurants, comments) => {
   const restosCard = []
   restaurants.forEach((obj) => {
     // Get comments for that restaurant
@@ -21,7 +21,7 @@ const processRestaurantsToCards = (restaurants, comments) => {
   return restosCard
 }
 
-const processUsersRestaurants = (user, restaurants) => {
+export const processUsersRestaurants = (user, restaurants) => {
   const userRestaurantsIds = values(user.restaurants)
   const userRestaurantsObjs = []
   userRestaurantsIds.forEach((id) => {
@@ -30,5 +30,3 @@ const processUsersRestaurants = (user, restaurants) => {
   })
   return flatten(userRestaurantsObjs)
 }
-
-export { processRestaurantsToCards, processUsersRestaurants }

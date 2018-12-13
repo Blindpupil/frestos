@@ -1,9 +1,9 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="500px">
 
-    <v-list-tile slot="activator">
+    <v-list-tile slot="activator" class="v-list__tile--link">
       <v-list-tile-title>
-        Edit
+        <slot></slot>
       </v-list-tile-title>
     </v-list-tile>
 
@@ -116,6 +116,8 @@
   };
 </script>
 
-<style scoped>
-
+<style  scoped>
+  .v-list__tile--link {
+    width: 80px
+  }
 </style>

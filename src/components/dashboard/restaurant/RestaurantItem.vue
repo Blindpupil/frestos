@@ -17,10 +17,14 @@
                   </v-btn>
 
                   <v-list>        
-                    <edit-restaurant-dialog :card="card" :previousComment="comment"></edit-restaurant-dialog>
+                    <edit-restaurant-dialog :card="card" :previousComment="comment">
+                      Edit
+                    </edit-restaurant-dialog>
 
-                    <v-list-tile >
-                      <v-list-tile-title>Delete</v-list-tile-title>
+                    <v-list-tile @click="deleteResto()">
+                      <v-list-tile-title>
+                        Delete
+                      </v-list-tile-title>
                     </v-list-tile>
                   </v-list>
                 </v-menu>
@@ -60,6 +64,7 @@
   import { find, isEmpty } from 'lodash-es'
   import { mapGetters } from 'vuex'
   import EditRestaurantDialog from '@/components/dashboard/restaurant/EditRestaurantDialog'
+  import { DELETE_RESTO_FROM_USER } from '@/store/types/action_types'
 
   export default {
     name: 'restaurant-item',
@@ -80,7 +85,7 @@
     },
     computed: {
       comment() {
-        // Grab the content of the comment that the current user wrote for the current restaurant
+        // Grab the comment that the current user wrote for the current restaurant
         if (isEmpty(this.card.comments)) {
           return { content: 'You have no opinions of this place so far' }
         } else {
@@ -99,7 +104,14 @@
       },
       ...mapGetters(['currentUser'])
     },
-    methods: {}
+    methods: {
+      deleteResto() {
+        const restoKey = this.card['.key']
+        const commentKey = this.comment['.key']
+
+        this.$store.dispatch(DELETE_RESTO_FROM_USER, { restoKey, commentKey })
+      }
+    }
   }
 </script>
 

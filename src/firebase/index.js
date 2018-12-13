@@ -9,9 +9,9 @@ const restosRef = db.ref('restaurants')
 const usersRef = db.ref('users')
 const commentsRef = db.ref('comments')
 
-// composed references
-function refById(ref, id) {
-  return db.ref(`${ref}/${id}`)
+// custom reference
+function customRef(reference) {
+  return db.ref(reference)
 }
 
-export { restosRef, commentsRef, usersRef, refById }
+export { restosRef, commentsRef, usersRef, customRef }
