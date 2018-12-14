@@ -15,7 +15,7 @@ yarn-error.log*
 *.sln
 
 # Firebase config
-src/firebase/config.js
+src/firebase/.config.js
 
 # Keys
 src/keys.js
