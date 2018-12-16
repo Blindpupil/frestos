@@ -1,7 +1,8 @@
 import {
+  difference,
   filter,
-  values,
-  flatten
+  flatten,
+  values
 } from 'lodash-es'
 
 export const processRestaurantsToCards = (restaurants, comments) => {
@@ -29,4 +30,20 @@ export const processUsersRestaurants = (user, restaurants) => {
     userRestaurantsObjs.push(restaurant)
   })
   return flatten(userRestaurantsObjs)
+}
+
+export const processUsersRecommended = (user, restaurants) => {
+  // For now this only returns restos the user doesn't have
+  const userRestosIds = values(user.restaurants)
+  const restaurantIds = restaurants.map(o => o['.key'])
+  const userRecommendedRestosIds = difference(restaurantIds, userRestosIds)
+
+  const userRecommendedRestosObj = []
+
+  userRecommendedRestosIds.forEach((id) => {
+    const restaurant = restaurants.find(o => o['.key'] === id)
+    userRecommendedRestosObj.push(restaurant)
+  })
+
+  return userRecommendedRestosObj
 }

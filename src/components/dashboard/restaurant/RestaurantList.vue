@@ -1,19 +1,14 @@
 <template>
-  <v-layout row>
-    <v-flex xs12>
-      <h2> 
-        <slot></slot> 
-      </h2>
-
+  <v-container grid-list-md px-0>
+    <v-layout row wrap>
       <restaurant-item 
         v-for="card in userRestaurantCards" 
         :key="card['.key']" 
         :card="card"
       >
       </restaurant-item>
-
-    </v-flex>
-  </v-layout>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>

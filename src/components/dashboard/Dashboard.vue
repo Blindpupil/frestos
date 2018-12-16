@@ -70,10 +70,8 @@
     </v-toolbar>
 
     <v-content>
-      <v-container fill-height>
-        <v-layout justify-center align-center>
-          <router-view></router-view>
-        </v-layout>
+      <v-container fill-height fluid>
+        <router-view></router-view>
       </v-container>
     </v-content>
   </v-app>
