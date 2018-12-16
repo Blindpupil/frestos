@@ -23,7 +23,6 @@ export default {
     [SET_COMMENTS_REF]: firebaseAction(({ bindFirebaseRef }, ref) => {
       bindFirebaseRef('comments', ref)
     }),
-    /* eslint-disable */
     async [WRITE_COMMENT_TO_FB]({ commit, dispatch }, comment) {
       const commentId = comment['.key']
       const { isNew } = comment
