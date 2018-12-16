@@ -2,24 +2,28 @@
 import { firebaseAction } from 'vuexfire'
 import { isEmpty } from 'lodash-es'
 import {
-  restosRef,
   commentsRef,
-  customRef
+  customRef,
+  restosRef
 } from '@/firebase'
-import { processRestaurantsToCards, processUsersRestaurants } from '@/store/utils'
+import {
+  processRestaurantsToCards,
+  processUsersRestaurants,
+  processUsersRecommended
+} from '@/store/utils'
 import { createRestaurant } from '@/models/Restaurant'
 import {
-  SET_RESTOS_REF,
-  WRITE_RESTO_TO_FB,
-  ADD_RESTO_TO_USER,
-  WRITE_COMMENT_TO_FB,
   ADD_COMMENT_TO_RESTO,
-  GET_RESTOS_CARDS,
-  SET_USER_REF,
-  SET_COMMENTS_REF,
+  ADD_RESTO_TO_USER,
   DELETE_COMMENT_FROM_RESTO,
+  GET_RESTOS_CARDS,
+  SET_COMMENTS_REF,
+  SET_RESTOS_REF,
   SET_RESTO_COMMENTS_REF,
-  SET_RESTO_USERS_REF
+  SET_RESTO_USERS_REF,
+  SET_USER_REF,
+  WRITE_COMMENT_TO_FB,
+  WRITE_RESTO_TO_FB
 } from '@/store/types/action_types'
 import { SET_ERROR } from '@/store/types/mutation_types'
 
@@ -40,11 +44,23 @@ export default {
 
       return processUsersRestaurants(userObj, restaurants)
     },
+    userRecommended: (state, getters) => {
+      const { userObj } = getters
+      const { restaurants } = state
+
+      return processUsersRecommended(userObj, restaurants)
+    },
     userRestaurantCards: (state, getters, rootState) => {
       const { userRestaurants } = getters
       const { comments } = rootState.comments
 
       return processRestaurantsToCards(userRestaurants, comments)
+    },
+    userRecommendedCards: (state, getters, rootState) => {
+      const { userRecommended } = getters
+      const { comments } = rootState.comments
+
+      return processRestaurantsToCards(userRecommended, comments)
     }
   },
   actions: {
@@ -64,10 +80,12 @@ export default {
       try {
         const restoKey = inputs['.key'] || await restosRef.push().key
 
-        // Handle comment
+        // Handle comment (helper object)
         const commentInfo = {
           isNew: !comment['.key'],
-          hasContent: !isEmpty(comment.content)
+          hasContent: !isEmpty(comment.content),
+          // also adding the restaraunt key for the case when it's a new one
+          restaurant: restoKey
         }
 
         let commentId
@@ -85,11 +103,12 @@ export default {
 
         const updates = await createRestaurant(data, restoKey, currentUser)
 
+
         // Dispatch operations affecting firebase entries different than restuarant
-        // if resto is new, add restaurant to user
+        // If resto is new, add restaurant to user
         if (!inputs['.key']) await dispatch(ADD_RESTO_TO_USER, restoKey)
 
-        // edit comment, if there's any
+        // Edit comment, if there's any
         if (commentInfo.hasContent) {
           await dispatch(WRITE_COMMENT_TO_FB, Object.assign(comment, commentInfo))
         }
@@ -133,8 +152,9 @@ export default {
       }
     },
     async [GET_RESTOS_CARDS]({ commit, getters, dispatch }) {
+      const { currentUser } = getters
       try {
-        await dispatch(SET_USER_REF, customRef(`users/${getters.currentUser}`))
+        await dispatch(SET_USER_REF, customRef(`users/${currentUser}`))
         await dispatch(SET_RESTOS_REF, restosRef)
         await dispatch(SET_COMMENTS_REF, commentsRef)
       } catch (err) {

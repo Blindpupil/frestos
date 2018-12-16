@@ -5,23 +5,12 @@
         <v-container fill-height fluid pa-0>
           <v-layout fill-height>
             <v-flex xs12 align-end flexbox>
-              <v-menu bottom right>
-                <v-btn slot="activator" dark icon>
-                  <v-icon>more_vert</v-icon>
+              <v-tooltip top>
+                <v-btn dark icon slot="activator" @click="addResto">
+                  <v-icon>favorite_border</v-icon>
                 </v-btn>
-
-                <v-list>        
-                  <edit-restaurant-dialog :card="card" :previousComment="comment">
-                    Edit
-                  </edit-restaurant-dialog>
-
-                  <v-list-tile @click="deleteResto()">
-                    <v-list-tile-title>
-                      Delete
-                    </v-list-tile-title>
-                  </v-list-tile>
-                </v-list>
-              </v-menu>
+                <span>Add to my restaurants</span>
+              </v-tooltip>
             </v-flex>
           </v-layout>
         </v-container>
@@ -30,7 +19,9 @@
       <v-card-title>
         <div>
           <span class="grey--text">Friends rating: {{ card.rating }}</span><br>
+          
           <h3>{{ card.name }}</h3><br>
+          
           <span>{{ card.location }}</span>
         </div>
       </v-card-title>
@@ -57,10 +48,10 @@
   import { find, isEmpty } from 'lodash-es'
   import { mapGetters } from 'vuex'
   import EditRestaurantDialog from '@/components/dashboard/restaurant/EditRestaurantDialog'
-  import { DELETE_RESTO_FROM_USER } from '@/store/types/action_types'
+  import { ADD_RESTO_TO_USER } from '@/store/types/action_types'
 
   export default {
-    name: 'restaurant-item',
+    name: 'recommended-item',
     components: {
       EditRestaurantDialog
     },
@@ -77,14 +68,12 @@
       }
     },
     computed: {
-      ...mapGetters(['currentUser']),
       comment() {
-        // Grab the comment that the current user wrote for the current restaurant
-        const userComment = find(this.card.comments, o => o.uid === this.currentUser)
-        if (isEmpty(userComment)) {
-          return { content: 'You have no opinions of this place so far' }
+        if (isEmpty(this.card.comments)) {
+          return { content: 'There are no opinions of this place so far' }
         } else {
-          return userComment
+          // For now grab the first comment. In the future will be all friends' comments
+          return this.card.comments[0]
         }
       },
       photoUrl() {
@@ -98,11 +87,9 @@
       }
     },
     methods: {
-      deleteResto() {
+      addResto() {
         const restoKey = this.card['.key']
-        const commentKey = this.comment['.key']
-
-        this.$store.dispatch(DELETE_RESTO_FROM_USER, { restoKey, commentKey })
+        this.$store.dispatch(ADD_RESTO_TO_USER, restoKey)
       }
     }
   }
