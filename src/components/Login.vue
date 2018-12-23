@@ -9,7 +9,11 @@
             <v-icon dark left>public</v-icon>
             Continue with Google
           </v-btn>
-          <div id="firebaseui-auth-container"></div>
+
+          <v-btn color="blue" class="white--text" @click="facebookAuth">
+            <v-icon dark left>people</v-icon>
+            Continue with Facebook
+          </v-btn>
 
           <v-text-field label="E-mail" v-model="email" @focus="hideNotif" required></v-text-field>
 
@@ -46,8 +50,12 @@
   import { mapGetters } from 'vuex'
   import { isEmpty } from 'lodash-es'
   import signup from '@/components/Signup'
-  import { LOGIN, GOOGLE_AUTH } from '@/store/types/action_types'
   import { SET_ERROR, CLEAR_ERROR } from '@/store/types/mutation_types'
+  import {
+    LOGIN,
+    GOOGLE_AUTH,
+    FACEBOOK_AUTH
+  } from '@/store/types/action_types'
 
   export default {
     name: 'log-in',
@@ -77,6 +85,9 @@
       },
       googleAuth() {
         this.$store.dispatch(GOOGLE_AUTH)
+      },
+      facebookAuth() {
+        this.$store.dispatch(FACEBOOK_AUTH)
       },
       handleAuth() {
         if (isEmpty(this.currentUser)) {
