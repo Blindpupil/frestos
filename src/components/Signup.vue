@@ -141,8 +141,8 @@
           const inputs = {
             email: this.email,
             password: this.password,
-            firstName: this.firstName,
-            lastName: this.lastName,
+            given_name: this.firstName,
+            family_name: this.lastName,
             interests: this.interests
           }
           this.$store.dispatch(SIGN_UP, inputs)

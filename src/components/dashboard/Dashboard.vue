@@ -80,12 +80,17 @@
 <script>
   import Routes from '@/router'
   import { mapGetters } from 'vuex'
-  import { LOGOUT } from '@/store/types/action_types'
+  import { auth } from '@/firebase'
+  import { LOGOUT, HANDLE_GOOGLE_RESPONSE } from '@/store/types/action_types'
 
   export default {
     name: 'Dashboard',
     components: {
       Routes
+    },
+    created() {
+      // Handle response from Google OAuth
+      this.$store.dispatch(HANDLE_GOOGLE_RESPONSE)
     },
     computed: {
       ...mapGetters({
@@ -115,7 +120,7 @@
       },
       logout() {
         this.$store.dispatch(LOGOUT)
-        this.$router.push('/login')
+          .then(() => this.$router.push('/login'))
       }
     }
   }

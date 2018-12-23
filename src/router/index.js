@@ -26,6 +26,21 @@ async function requireAuth(to, from, next) {
   }
 }
 
+async function checkForExistingSession(to, from, next) {
+  try {
+    // TODO: replace for a fullpage loader (currently stays in a whitescreen for long)
+    await store.dispatch(SESSION)
+    if (!isEmpty(store.getters.currentUser)) {
+      next({ path: '/dashboard', replace: true })
+    } else {
+      next()
+    }
+  } catch (err) {
+    store.commit(SET_ERROR, err)
+    console.error('error in requireAuth.', err)
+  }
+}
+
 export default new VueRouter({
   mode: 'history',
   routes: [
@@ -56,7 +71,8 @@ export default new VueRouter({
     {
       path: '/login',
       name: 'Login',
-      component: Login
+      component: Login,
+      beforeEnter: (to, from, next) => checkForExistingSession(to, from, next)
     }
   ]
 })

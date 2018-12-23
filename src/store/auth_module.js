@@ -1,11 +1,13 @@
-import firebase from 'firebase'
-import { usersRef } from '@/firebase'
+import { get } from 'lodash-es'
+import { usersRef, auth, googleProvider } from '@/firebase'
 import {
   SESSION,
   SIGN_UP,
   ADD_USER_TO_FB,
   LOGIN,
-  LOGOUT
+  LOGOUT,
+  GOOGLE_AUTH,
+  HANDLE_GOOGLE_RESPONSE
 } from '@/store/types/action_types'
 import {
   SET_USER,
@@ -15,7 +17,7 @@ import {
 
 const userInSession =  function () {
   return new Promise((resolve, reject) => {
-    firebase.auth().onAuthStateChanged((user) => {
+    auth.onAuthStateChanged((user) => {
       if (user) {
         resolve(user.uid)
       } else {
@@ -47,7 +49,7 @@ export default {
       let result
       let mergedUser
       try {
-        result = await firebase.auth().createUserWithEmailAndPassword(inputs.email, inputs.password)
+        result = await auth.createUserWithEmailAndPassword(inputs.email, inputs.password)
         mergedUser = Object.assign(inputs, result.user)
 
         await dispatch(ADD_USER_TO_FB, mergedUser)
@@ -59,21 +61,50 @@ export default {
     },
     async [LOGIN]({ commit, dispatch }, { email, password }) {
       try {
-        await firebase.auth().signInWithEmailAndPassword(email, password)
+        await auth.signInWithEmailAndPassword(email, password)
 
         await dispatch(SESSION)
       } catch (err) {
         commit(SET_ERROR, err)
       }
     },
-    async [ADD_USER_TO_FB]({ commit }, { uid, firstName, lastName, interests, email }) {
+    async [GOOGLE_AUTH]({ commit, dispatch }) {
       try {
-        await usersRef.child(uid).set({
-          firstName,
-          lastName,
-          interests,
-          email
-        })
+        await auth.signInWithRedirect(googleProvider)
+        await dispatch(SESSION)
+      } catch (err) {
+        console.error(err)
+        commit(SET_ERROR, { code: err.code, message: err.message })
+      }
+    },
+    async [HANDLE_GOOGLE_RESPONSE]({ commit, dispatch }) {
+      try {
+        const result = await auth.getRedirectResult()
+        const isNewUser = get(result, 'additionalUserInfo.isNewUser', false)
+        // const token = result.credential.accessToken
+
+        if (isNewUser) {
+          await dispatch(ADD_USER_TO_FB,
+            {
+              ...result.additionalUserInfo.profile,
+              uid: result.user.uid
+            })
+        }
+      } catch (err) {
+        console.error(HANDLE_GOOGLE_RESPONSE, err)
+        commit(SET_ERROR, err)
+      }
+    },
+    async [ADD_USER_TO_FB]({ commit }, profile = {}) {
+      const { uid } = profile
+
+      try {
+        const fullProfile = Object.assign({}, profile)
+
+        delete fullProfile.link
+        delete fullProfile.uid
+
+        await usersRef.child(uid).set(fullProfile)
       } catch (err) {
         console.error('addUserToDb action error: ', err)
         commit(SET_ERROR, err)
@@ -81,7 +112,8 @@ export default {
     },
     async [LOGOUT]({ commit }) {
       try {
-        commit(SET_LOGOUT, await firebase.auth().signOut())
+        await auth.signOut()
+        commit(SET_LOGOUT)
       } catch (err) {
         commit(SET_ERROR, err)
       }
