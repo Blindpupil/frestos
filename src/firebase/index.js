@@ -7,19 +7,18 @@ const app = firebase.initializeApp(config)
 const db = app.database()
 
 // Create direct database references
-const restosRef = db.ref('restaurants')
-const usersRef = db.ref('users')
-const commentsRef = db.ref('comments')
+export const restosRef = db.ref('restaurants')
+export const usersRef = db.ref('users')
+export const commentsRef = db.ref('comments')
 
 // Custom reference
-function customRef(reference) {
+export function customRef(reference) {
   return db.ref(reference)
 }
 
 // Auth function
-const auth = firebase.auth()
+export const auth = firebase.auth()
 
-// Google auth provider
-const googleProvider = new firebase.auth.GoogleAuthProvider()
-
-export { restosRef, commentsRef, usersRef, customRef, googleProvider, auth }
+// Auth providers
+export const googleProvider = new firebase.auth.GoogleAuthProvider()
+export const facebookProvider = new firebase.auth.FacebookAuthProvider()
