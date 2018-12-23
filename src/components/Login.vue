@@ -4,6 +4,13 @@
       <v-flex md6 lg4>
         <v-form ref="form" lazy-validation>
           <h2>Please login to access your dashboard</h2>
+
+          <v-btn color="red" class="white--text" @click="googleAuth">
+            <v-icon dark left>public</v-icon>
+            Continue with Google
+          </v-btn>
+          <div id="firebaseui-auth-container"></div>
+
           <v-text-field label="E-mail" v-model="email" @focus="hideNotif" required></v-text-field>
 
           <v-text-field
@@ -39,9 +46,8 @@
   import { mapGetters } from 'vuex'
   import { isEmpty } from 'lodash-es'
   import signup from '@/components/Signup'
-  import { LOGIN } from '@/store/types/action_types'
+  import { LOGIN, GOOGLE_AUTH } from '@/store/types/action_types'
   import { SET_ERROR, CLEAR_ERROR } from '@/store/types/mutation_types'
-
 
   export default {
     name: 'log-in',
@@ -67,13 +73,18 @@
           password: this.password
         }
         this.$store.dispatch(LOGIN, inputs)
-          .then(() => {
-            if (isEmpty(this.currentUser)) {
-              this.alert = true
-            } else {
-              this.$router.push('/dashboard')
-            }
-          })
+          .then(() => this.handleAuth())
+      },
+      googleAuth() {
+        this.$store.dispatch(GOOGLE_AUTH)
+      },
+      handleAuth() {
+        if (isEmpty(this.currentUser)) {
+          // Something went wrong
+          this.alert = true
+        } else {
+          this.$router.push('/dashboard')
+        }
       },
       clear() {
         this.$refs.form.reset()
