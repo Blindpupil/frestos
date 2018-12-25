@@ -81,11 +81,7 @@
   import Routes from '@/router'
   import { mapGetters } from 'vuex'
   import { auth } from '@/firebase'
-  import {
-    LOGOUT,
-    HANDLE_GOOGLE_RESPONSE,
-    HANDLE_FACEBOOK_RESPONSE
-  } from '@/store/types/action_types'
+  import { LOGOUT, HANDLE_PROVIDER_RESPONSE } from '@/store/types/action_types'
 
   export default {
     name: 'Dashboard',
@@ -93,9 +89,8 @@
       Routes
     },
     created() {
-      // Handle response from Google OAuth
-      this.$store.dispatch(HANDLE_GOOGLE_RESPONSE)
-      this.$store.dispatch(HANDLE_FACEBOOK_RESPONSE)
+      // Handle response from auth provider
+      this.$store.dispatch(HANDLE_PROVIDER_RESPONSE)
     },
     computed: {
       ...mapGetters({

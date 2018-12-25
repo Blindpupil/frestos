@@ -31,12 +31,12 @@ export function createRestaurant(data, restoKey, currentUser) {
 
   // Handle photo
   let photos
+  // If there's no newPhotoUrl there's nothing to do here, move on
   if (!isEmpty(data.newPhotoUrl)) {
     const userPhotoKey = findKey(data.photos, o => o.source === currentUser)
     const photoKey = userPhotoKey || restosRef.child(`${restoKey}/photos`).push().key
     const photo = userPhotoKey ? data.photos[userPhotoKey] : data.photos
 
-    // If there's no newPhotoUrl there's nothing to do here, move on
     photos = {
       targetKey: photoKey,
       ...photo,
@@ -76,15 +76,14 @@ export function createRestaurant(data, restoKey, currentUser) {
 
 // FB-READY RESTAURANT OBJECT EXAMPLE
 // {
-//   "comments/-LSzSCnsgFfVvOl2fGOx": "-LSzSCjcQBzWkeTjI0EC",
+//   "comments/-LSzSCnsgFfVvOl2fGOx": "-LSzSCj...CommentId",
 //   "link": "link.com",
 //   "location": "Madrid",
 //   "name": "San Botin",
 //   "photos/-LSzSCnt8oR08EZMoqBG": {
-//     "main": true,
 //     "source": "GURrTaWlUXXUxkDpA1WNlm09Fnh2",
 //     "url": "https://imagesvc.timeincapp.com/v3/mm/image"
 //   },
 //   "rating": "4",
-//   "users/-LSzSCnt8oR08EZMoqBH": "GURrTa..."
+//   "users/-LSzSCnt8oR08EZMoqBH": "GURrTa...uid"
 // }

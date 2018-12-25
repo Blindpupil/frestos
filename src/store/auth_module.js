@@ -1,10 +1,11 @@
-import { get } from 'lodash-es'
+import { get, isEmpty } from 'lodash-es'
 import {
   usersRef,
   auth,
   googleProvider,
   facebookProvider
 } from '@/firebase'
+import { createUser } from '@/models/User'
 import {
   SESSION,
   SIGN_UP,
@@ -13,8 +14,7 @@ import {
   LOGOUT,
   GOOGLE_AUTH,
   FACEBOOK_AUTH,
-  HANDLE_GOOGLE_RESPONSE,
-  HANDLE_FACEBOOK_RESPONSE
+  HANDLE_PROVIDER_RESPONSE
 } from '@/store/types/action_types'
 import {
   SET_USER,
@@ -42,7 +42,10 @@ export default {
     currentUser: state => state.currentUser
   },
   actions: {
-    async [SESSION]({ commit }) {
+    async [SESSION]({ getters, commit }) {
+      const { currentUser } = getters
+      if (!isEmpty(currentUser)) return
+
       let user
       try {
         user = await userInSession()
@@ -75,82 +78,45 @@ export default {
         commit(SET_ERROR, err)
       }
     },
-    async [GOOGLE_AUTH]({ commit, dispatch }) {
+    async [GOOGLE_AUTH]({ commit }) {
       try {
         await auth.signInWithRedirect(googleProvider)
-        await dispatch(SESSION)
       } catch (err) {
         console.error(err)
         commit(SET_ERROR, { code: err.code, message: err.message })
       }
     },
-    async [FACEBOOK_AUTH]({ commit, dispatch }) {
+    async [FACEBOOK_AUTH]({ commit }) {
       try {
         await auth.signInWithRedirect(facebookProvider)
-        await dispatch(SESSION)
       } catch (err) {
         console.error(err)
         commit(SET_ERROR, { code: err.code, message: err.message })
       }
     },
-    async [HANDLE_GOOGLE_RESPONSE]({ commit, dispatch }) {
+    async [HANDLE_PROVIDER_RESPONSE]({ commit, dispatch }) {
       try {
         const result = await auth.getRedirectResult()
-        if (result.additionalUserInfo.providerId !== 'google.com') return
+        if (isEmpty(result.additionalUserInfo)) return
+
+        // const token = result.credential.accessToken
+        const profile = createUser(result.additionalUserInfo.profile)
 
         const isNewUser = get(result, 'additionalUserInfo.isNewUser', false)
-        // const token = result.credential.accessToken
 
         if (isNewUser) {
-          await dispatch(ADD_USER_TO_FB,
-            {
-              ...result.additionalUserInfo.profile,
-              uid: result.user.uid
-            }
-          )
+          await dispatch(ADD_USER_TO_FB, profile)
         }
       } catch (err) {
-        console.error(HANDLE_GOOGLE_RESPONSE, err)
+        console.error(HANDLE_PROVIDER_RESPONSE, err)
         commit(SET_ERROR, err)
       }
     },
-    async [HANDLE_FACEBOOK_RESPONSE]({ commit, dispatch }) {
-      try {
-        const result = await auth.getRedirectResult()
-        if (result.additionalUserInfo.providerId !== 'facebook.com') return
-
-        const isNewUser = get(result, 'additionalUserInfo.isNewUser', false)
-        const picture = get(result, 'additionalUserInfo.profile.picture.data.url')
-        const uid = get(result, 'user.uid')
-        // const token = result.credential.accessToken
-
-        if (isNewUser) {
-          await dispatch(ADD_USER_TO_FB,
-            {
-              email: result.additionalUserInfo.profile.email,
-              id: result.additionalUserInfo.profile.id,
-              given_name: result.additionalUserInfo.profile.first_name,
-              family_name: result.additionalUserInfo.profile.last_name,
-              name: result.additionalUserInfo.profile.name,
-              picture,
-              uid
-            }
-          )
-        }
-      } catch (err) {
-        console.error(HANDLE_FACEBOOK_RESPONSE, err)
-        commit(SET_ERROR, err)
-      }
-    },
-    async [ADD_USER_TO_FB]({ commit }, profile = {}) {
-      const { uid } = profile
+    async [ADD_USER_TO_FB]({ commit, getters }, profile = {}) {
+      const { currentUser } = getters
 
       try {
-        const fullProfile = Object.assign({}, profile)
-
-        delete fullProfile.link
-        delete fullProfile.uid
-        await usersRef.child(uid).set(fullProfile)
+        await usersRef.child(currentUser).set(profile)
       } catch (err) {
         console.error('addUserToDb action error: ', err)
         commit(SET_ERROR, err)

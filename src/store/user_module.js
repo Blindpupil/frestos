@@ -7,6 +7,7 @@ import {
   ADD_COMMENT_TO_USER,
   DELETE_COMMENT,
   DELETE_RESTO_FROM_USER,
+  DELETE_COMMENT_FROM_USER,
   SET_USER_COMMENTS_REF,
   SET_USER_RESTOS_REF
 } from '@/store/types/action_types'
@@ -65,16 +66,26 @@ export default {
         await usersRef.child(`${uid}/restaurants/${restoKeyInUser}`).remove()
 
         // Delete the restaurant's comment from the user's comments list
-        await dispatch(SET_USER_COMMENTS_REF, customRef(`users/${uid}/comments`))
+        await dispatch(DELETE_COMMENT_FROM_USER, { commentKey })
+
+        // Handle the rest
+        await dispatch(DELETE_COMMENT, { restoKey, commentKey })
+      } catch (err) {
+        console.error(DELETE_RESTO_FROM_USER, err)
+        commit(SET_ERROR, err)
+      }
+    },
+    async [DELETE_COMMENT_FROM_USER]({ commit, dispatch, getters }, { commentKey }) {
+      const uid = getters.currentUser
+      try {
+        await dispatch(SET_USER_COMMENTS_REF, usersRef.child(`${uid}/comments`))
 
         const commentList = getters.userComments
         const commentKeyInUser = commentList.find(o => o['.value'] === commentKey)['.key']
 
-        // Handle the rest
         await usersRef.child(`${uid}/comments/${commentKeyInUser}`).remove()
-        await dispatch(DELETE_COMMENT, { restoKey, commentKey })
       } catch (err) {
-        console.error(DELETE_RESTO_FROM_USER, err)
+        console.error(DELETE_COMMENT_FROM_USER, err)
         commit(SET_ERROR, err)
       }
     }
