@@ -2,6 +2,7 @@ import {
   difference,
   filter,
   flatten,
+  map,
   values
 } from 'lodash-es'
 
@@ -46,4 +47,29 @@ export const processUsersRecommended = (user, restaurants) => {
   })
 
   return userRecommendedRestosObj
+}
+
+export const processPeople = ({ people, userObj }) => {
+  // Return people's name, picture and status
+  const peopleList = []
+
+  // This sentUsers is an array of userKeys to which this user sent requests
+  const sentUsers = map(userObj.sent_requests, o => o.to)
+
+  people.forEach((o) => {
+    if (o['.key'] === userObj['.key']) return
+
+    // If the currentUser sent a request to this person, set status as pending
+    const status = sentUsers.includes(o['.key'])
+      ? 'pending'
+      : false
+
+    peopleList.push({
+      userKey: o['.key'],
+      name: o.name,
+      picture: o.picture,
+      status
+    })
+  })
+  return peopleList
 }

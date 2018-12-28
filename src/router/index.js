@@ -14,7 +14,7 @@ Vue.use(VueRouter)
 
 async function requireAuth(to, from, next) {
   try {
-    // required to maintain the session
+    // Required to maintain the session
     await store.dispatch(SESSION)
     const currentUser = get(store, 'getters.currentUser', null)
 
@@ -28,7 +28,7 @@ async function requireAuth(to, from, next) {
     console.error('error in requireAuth.', err)
   }
 }
-// When you log in through a Provider it takes you back to the login page
+// When you log in through a Provider it takes you back to the login page.
 // This is the function that redirects to the dashboard if login worked
 async function checkForExistingSession(to, from, next) {
   try {
