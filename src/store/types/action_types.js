@@ -16,6 +16,7 @@ export const SET_RESTO_COMMENTS_REF = 'setRestoCommentsRef'
 export const SET_RESTO_USERS_REF = 'setRestoUsersRef'
 export const WRITE_RESTO_TO_FB = 'writeRestaurantToFb'
 export const ADD_COMMENT_TO_RESTO = 'addCommentToRestaurant'
+export const ADD_USER_TO_RESTO = 'addUserToResto'
 export const GET_RESTOS_CARDS = 'fetchRestaurantCards'
 
 // User

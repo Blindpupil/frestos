@@ -1,6 +1,6 @@
 // Handle operations to the Users reference in Firebase
 import { firebaseAction } from 'vuexfire'
-import { usersRef, customRef } from '@/firebase'
+import { usersRef } from '@/firebase'
 import {
   processPeople,
   processRequests,
@@ -9,6 +9,7 @@ import {
 import {
   SET_USER_REF,
   ADD_RESTO_TO_USER,
+  ADD_USER_TO_RESTO,
   ADD_COMMENT_TO_USER,
   DELETE_COMMENT,
   DELETE_RESTO_FROM_USER,
@@ -75,13 +76,17 @@ export default {
         commit(SET_ERROR, err)
       }
     },
-    async [ADD_RESTO_TO_USER]({ commit, getters }, restoKey) {
+    async [ADD_RESTO_TO_USER]({ dispatch, commit, getters }, restoKey) {
       const { currentUser } = getters
       try {
-        // add the restaurant to the user object
-        await usersRef.child(`${currentUser}/restaurants`).push(restoKey)
+        // Add restaurant ID to the user object
+        const targetKey = await usersRef.child(`${currentUser}/restaurants`).push().key
+        await usersRef.child(`${currentUser}/restaurants/${targetKey}`).set(restoKey)
+
+        // Add user ID to resto object
+        await dispatch(ADD_USER_TO_RESTO, { restoKey, targetKey })
       } catch (err) {
-        console.error('addRestaurantToUser action error: ', err)
+        console.error(ADD_RESTO_TO_USER, err)
         commit(SET_ERROR, err)
       }
     },
@@ -89,7 +94,7 @@ export default {
       const { currentUser } = getters
       try {
         // add the comment to the user object
-        await usersRef.child(`${currentUser}/comments`).push(commentKey)
+        await usersRef.child(`${currentUser}/comments/${commentKey}`).set(commentKey)
       } catch (err) {
         console.error('addCommentToUser: ', err)
         commit(SET_ERROR, err)
@@ -99,32 +104,29 @@ export default {
       const { currentUser } = getters
       try {
         // Delete the restaurant from the user
-        await dispatch(SET_USER_RESTOS_REF, customRef(`users/${currentUser}/restaurants`))
+        await dispatch(SET_USER_RESTOS_REF, usersRef.child(`${currentUser}/restaurants`))
 
         const restosList = getters.userRestos
         const restoKeyInUser = restosList.find(o => o['.value'] === restoKey)['.key']
 
         await usersRef.child(`${currentUser}/restaurants/${restoKeyInUser}`).remove()
 
-        // Delete the restaurant's comment from the user's comments list
-        await dispatch(DELETE_COMMENT_FROM_USER, { commentKey })
+        if (commentKey) {
+          // Delete the restaurant's comment from the user's comments list
+          await dispatch(DELETE_COMMENT_FROM_USER, { commentKey })
 
-        // Handle the rest
-        await dispatch(DELETE_COMMENT, { restoKey, commentKey })
+          // Delete the comment itself
+          await dispatch(DELETE_COMMENT, { restoKey, commentKey })
+        }
       } catch (err) {
         console.error(DELETE_RESTO_FROM_USER, err)
         commit(SET_ERROR, err)
       }
     },
-    async [DELETE_COMMENT_FROM_USER]({ commit, dispatch, getters }, { commentKey }) {
+    async [DELETE_COMMENT_FROM_USER]({ commit, getters }, { commentKey }) {
       const { currentUser } = getters
       try {
-        await dispatch(SET_USER_COMMENTS_REF, usersRef.child(`${currentUser}/comments`))
-
-        const commentList = getters.userComments
-        const commentKeyInUser = commentList.find(o => o['.value'] === commentKey)['.key']
-
-        await usersRef.child(`${currentUser}/comments/${commentKeyInUser}`).remove()
+        await usersRef.child(`${currentUser}/comments/${commentKey}`).remove()
       } catch (err) {
         console.error(DELETE_COMMENT_FROM_USER, err)
         commit(SET_ERROR, err)

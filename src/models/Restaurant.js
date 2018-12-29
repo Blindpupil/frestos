@@ -4,7 +4,7 @@ import { findKey, isEmpty } from 'lodash-es'
 
 export class Restaurant {
   constructor(data = {}) {
-    if (data.comments) this[`comments/${data.comments.targetKey}`] = data.comments.commentId
+    if (data.newComment) this[`comments/${data.newComment}`] = data.newComment
     if (data.link) this.link = data.link
     if (data.location) this.location = data.location
     if (data.name) this.name = data.name
@@ -17,16 +17,13 @@ export class Restaurant {
   }
 }
 
-export function createRestaurant(data, restoKey, currentUser) {
+export function createRestaurant({ data = {}, restoKey = '', currentUser = '' } = {}) {
   const { comment, commentInfo } = data
 
-  let comments
+  let newComment
   // Only new comments affect the restaurant in firebase, else nothing
   if (commentInfo.isNew && commentInfo.hasContent) {
-    comments = {
-      targetKey: restosRef.child(`${restoKey}/comments`).push().key,
-      commentId: comment['.key']
-    }
+    newComment = comment['.key']
   }
 
   // Handle photo
@@ -68,7 +65,7 @@ export function createRestaurant(data, restoKey, currentUser) {
 
   return Object.freeze(new Restaurant({
     ...data,
-    comments,
+    newComment,
     users,
     photos
   }))
@@ -76,7 +73,7 @@ export function createRestaurant(data, restoKey, currentUser) {
 
 // FB-READY RESTAURANT OBJECT EXAMPLE
 // {
-//   "comments/-LSzSCnsgFfVvOl2fGOx": "-LSzSCj...CommentId",
+//   "comments/-LSzSCnsgFfVvOl2fGOx": "-LSzSCnsg...CommentId",
 //   "link": "link.com",
 //   "location": "Madrid",
 //   "name": "San Botin",
