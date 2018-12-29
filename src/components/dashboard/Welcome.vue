@@ -15,8 +15,12 @@
               <v-list-tile-title v-text="user.name"></v-list-tile-title>
             </v-list-tile-content>
 
-            <v-btn color="primary" @click="acceptRequest(user)">
+            <v-btn round color="primary" @click="acceptRequest(user)">
               Accept Request
+            </v-btn>
+
+            <v-btn round color="error" @click="declineRequest(user)">
+              Decline Request
             </v-btn>
           </v-list-tile>
         </div>
@@ -32,7 +36,7 @@
               <v-list-tile-title v-text="user.name"></v-list-tile-title>
             </v-list-tile-content>
 
-            <v-btn color="danger" @click="cancelRequest(user)">
+            <v-btn round color="error" @click="cancelSentRequest(user)">
               Cancel Request
             </v-btn>
           </v-list-tile>
@@ -44,7 +48,11 @@
 
 <script>
   import { mapGetters } from 'vuex'
-  import { ACCEPT_FRIEND, REMOVE_FRIEND_REQUEST } from '@/store/types/action_types'
+  import {
+    ACCEPT_FRIEND,
+    CANCEL_SENT_REQUEST,
+    DELETE_INCOMING_REQUEST
+  } from '@/store/types/action_types'
 
   export default {
     name: 'welcome',
@@ -58,8 +66,11 @@
       acceptRequest(user) {
         this.$store.dispatch(ACCEPT_FRIEND, user)
       },
-      cancelRequest(user) {
-        this.$store.dispatch(REMOVE_FRIEND_REQUEST, user)
+      cancelSentRequest(user) {
+        this.$store.dispatch(CANCEL_SENT_REQUEST, user)
+      },
+      declineIncomingRequest(user) {
+        this.$store.dispatch(DELETE_INCOMING_REQUEST, user)
       }
     }
   };

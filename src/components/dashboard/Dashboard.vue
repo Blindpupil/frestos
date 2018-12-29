@@ -39,6 +39,19 @@
             </v-list-tile-avatar>
 
             <v-list-tile-title v-text="friend.name"></v-list-tile-title>
+
+            <v-tooltip top>
+              <v-hover slot="activator">
+                <v-icon
+                  slot-scope="{ hover }"
+                  :class="`elevation-${hover ? 12 : 0}`"
+                  @click="removeFriend(friend)"
+                >
+                  remove_circle_outline
+                </v-icon>
+              </v-hover>
+              <span>Remove friend</span>
+            </v-tooltip>
           </v-list-tile>
         </v-list>
         <v-subheader v-else>
@@ -48,7 +61,7 @@
         <v-list-tile>
           <add-friends-dialog> 
             <v-btn round color="blue-grey" class="white--text my-3">
-              <v-icon left dark>add_circle_outline</v-icon>
+              <v-icon left dark>person_add</v-icon>
               Add new friends
             </v-btn>
           </add-friends-dialog>
@@ -105,9 +118,10 @@
   import { mapGetters } from 'vuex'
   import { auth, usersRef } from '@/firebase'
   import {
-    LOGOUT,
     HANDLE_PROVIDER_RESPONSE,
-    SET_USER_REF
+    LOGOUT,
+    SET_USER_REF,
+    REMOVE_FRIEND
   } from '@/store/types/action_types'
   import AddFriendsDialog from '@/components/dashboard/friends/AddFriendsDialog'
 
@@ -161,7 +175,10 @@
           ? this.activetab = ''
           : this.activetab = tab
       },
-      logout() {
+      removeFriend(friend) {
+        this.$store.dispatch(REMOVE_FRIEND, friend)
+      },
+       logout() {
         this.$store.dispatch(LOGOUT)
           .then(() => this.$router.push('/login'))
       }
@@ -186,5 +203,9 @@
   .v-list__tile__title .pending {
     color: $primary;
     font-style: italic;
+  }
+
+  i.v-icon--link {
+    border-radius: 20px;
   }
 </style>

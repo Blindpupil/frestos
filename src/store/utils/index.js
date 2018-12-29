@@ -117,12 +117,18 @@ export const processRequests = ({
 
 export const processFriends = ({ peopleList = {}, friends = {} } = {}) => {
   if (isEmpty(friends)) return null
-  const friendsKeys = map(friends, 'uid')
+  const friendsObjects = []
+  forEach(friends, (value, key) => {
+    friendsObjects.push({
+      friendListKey: key,
+      friendKey: value.uid
+    })
+  })
 
   const friendsList = []
-  friendsKeys.forEach((key) => {
-    const match = peopleList.find(o => o.userKey === key)
-    friendsList.push(match)
+  friendsObjects.forEach((friendObj) => {
+    const match = peopleList.find(o => o.userKey === friendObj.friendKey)
+    friendsList.push({ ...match, friendListKey: friendObj.friendListKey })
   })
 
   return friendsList

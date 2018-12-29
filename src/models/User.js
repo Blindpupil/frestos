@@ -11,6 +11,9 @@ export class User {
     if (data.locale) this.locale = data.locale
     if (data.name) this.name = data.name
     if (data.picture) this.picture = data.picture
+    if (data.sent_requests) this.sent_requests = data.sent_requests // TBC
+    if (data.incoming_requests) this.incoming_requests = data.incoming_requests // TBC
+    if (data.friends) this.friends = data.friends // TBC
     if (data.newRestaurant) this[`restaurants/${data.newRestaurant.targetKey}`] = data.newRestaurant.restaurantId
   }
 }
@@ -72,5 +75,7 @@ export function createUser(data) {
 //   picture: "https://lh4.googleusercontent.com/-gBnq_iPibFY/...",
 //   verified_email: true,
 //   "comments/-LSzSCnsgFfVvOl2fGOx": "-LSzSCj...CommentId",
-//   "restaurants/-LSzSCnsgFfVvOl2fGOx": "-LSzSCj...RestoId"
+//   "restaurants/-LSzSCnsgFfVvOl2fGOx": "-LSzSCj...RestoId",
+//   "sent_requests/-LSzSCnsgFfVvOl2fGOx": "-LSzSCj...requestId",
+//   "incoming_requests/-LSzSCnsgFfVvOl2fGOx": "-LSzSCj...requestId"
 // }

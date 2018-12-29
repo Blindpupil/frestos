@@ -19,7 +19,9 @@ import {
   SET_PEOPLE_LIST,
   SEND_FRIEND_REQUEST,
   ACCEPT_FRIEND,
-  REMOVE_FRIEND_REQUEST
+  CANCEL_SENT_REQUEST,
+  DELETE_INCOMING_REQUEST,
+  REMOVE_FRIEND
 } from '@/store/types/action_types'
 import { SET_ERROR } from '@/store/types/mutation_types'
 
@@ -171,15 +173,14 @@ export default {
           since: timestamp
         })
 
-        // Now that it's added, we remove the friend request entry from firebase
-        // TODO: this REMOVE_FRIEND_REQUEST is not working when adding
-        await dispatch(REMOVE_FRIEND_REQUEST, { userKey, requestKey })
+        // Now that it's added, we remove the friend request entries from firebase
+        await dispatch(DELETE_INCOMING_REQUEST, { userKey, requestKey })
       } catch (err) {
         console.error(ACCEPT_FRIEND, err)
         commit(SET_ERROR, err)
       }
     },
-    async [REMOVE_FRIEND_REQUEST]({ commit, getters }, { userKey, requestKey }) {
+    async [DELETE_INCOMING_REQUEST]({ commit, getters }, { userKey, requestKey }) {
       const { currentUser } = getters
       try {
         // Remove from sent_requests list in target
@@ -188,7 +189,33 @@ export default {
         // Remove from incoming_requests list in currentUser
         await usersRef.child(`${currentUser}/incoming_requests/${requestKey}`).remove()
       } catch (err) {
-        console.error(REMOVE_FRIEND_REQUEST, err)
+        console.error(DELETE_INCOMING_REQUEST, err)
+        commit(SET_ERROR, err)
+      }
+    },
+    async [CANCEL_SENT_REQUEST]({ commit, getters }, { userKey, requestKey }) {
+      const { currentUser } = getters
+      try {
+        // Remove from incoming_requests list in target
+        await usersRef.child(`${userKey}/incoming_requests/${requestKey}`).remove()
+
+        // Remove from sent_requests list in currentUser
+        await usersRef.child(`${currentUser}/sent_requests/${requestKey}`).remove()
+      } catch (err) {
+        console.error(CANCEL_SENT_REQUEST, err)
+        commit(SET_ERROR, err)
+      }
+    },
+    async [REMOVE_FRIEND]({ commit, getters }, { userKey, friendListKey }) {
+      const { currentUser } = getters
+      try {
+        // Remove friend from target
+        await usersRef.child(`${userKey}/friends/${friendListKey}`).remove()
+
+        // Remove friend from currentUser
+        await usersRef.child(`${currentUser}/friends/${friendListKey}`).remove()
+      } catch (err) {
+        console.error(REMOVE_FRIEND, err)
         commit(SET_ERROR, err)
       }
     }
