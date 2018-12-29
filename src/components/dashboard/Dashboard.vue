@@ -13,10 +13,12 @@
         <v-list-tile
           v-for="item in items" :key="item.text"
           @click="route(item.link)"
-          :class="[ activetab === item.tab ? 'active' : '' ]">
+          :class="[ activetab === item.tab ? 'active' : '' ]"
+        >
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
+
           <v-list-tile-content>
             <v-list-tile-title>
               <p>{{item.text}}</p>
@@ -26,35 +28,31 @@
 
         <v-subheader class="mt-3 grey--text text--darken-1">FOODY FRIENDS</v-subheader>
 
-        <v-list>
-          <v-list-tile v-for="person in peopleList" :key="person.userKey" avatar>
+        <v-list v-if="friendsList">
+          <v-list-tile v-for="friend in friendsList" :key="friend.userKey" avatar>
             <v-list-tile-avatar>
-              <img 
-                :src="person.picture ||
+              <img
+                :src="friend.picture ||
                 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQevgWjR63wZ3_lGeYbgHAU_eYW4iaxCHxmkxi8bLmcoop-QlsVvQ'" 
                 alt="User profi;e"
               >
             </v-list-tile-avatar>
-            <v-list-tile-title>
-              {{ person.name }}
 
-              <span v-if="person.status" :class="person.status">
-                {{ `(${person.status})` }}
-              </span>
-            </v-list-tile-title>
+            <v-list-tile-title v-text="friend.name"></v-list-tile-title>
           </v-list-tile>
         </v-list>
+        <v-subheader v-else>
+          You're alone here, add friends!
+        </v-subheader>
 
-        <v-list>
-          <v-list-tile>
-            <add-friends-dialog> 
-              <v-btn round color="blue-grey" class="white--text my-3">
-                <v-icon left dark>add_circle_outline</v-icon>
-                Add new friends
-              </v-btn>
-            </add-friends-dialog>
-          </v-list-tile>
-        </v-list>
+        <v-list-tile>
+          <add-friends-dialog> 
+            <v-btn round color="blue-grey" class="white--text my-3">
+              <v-icon left dark>add_circle_outline</v-icon>
+              Add new friends
+            </v-btn>
+          </add-friends-dialog>
+        </v-list-tile>
 
         <v-list-tile>
           <v-list-tile-action>
@@ -129,7 +127,7 @@
       await this.$store.dispatch(SET_USER_REF, usersRef.child(user))
     },
     computed: {
-      ...mapGetters(['userObj', 'currentUser', 'peopleList'])
+      ...mapGetters(['userObj', 'currentUser', 'friendsList'])
     },
     data() {
       return {

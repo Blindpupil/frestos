@@ -2,6 +2,8 @@ import {
   difference,
   filter,
   flatten,
+  forEach,
+  isEmpty,
   map,
   values
 } from 'lodash-es'
@@ -49,20 +51,28 @@ export const processUsersRecommended = (user, restaurants) => {
   return userRecommendedRestosObj
 }
 
-export const processPeople = ({ people, userObj }) => {
+export const processPeople = ({ people = {}, userObj = {} } = {}) => {
   // Return people's name, picture and status
   const peopleList = []
 
   // This sentUsers is an array of userKeys to which this user sent requests
-  const sentUsers = map(userObj.sent_requests, o => o.to)
+  const sents = map(userObj.sent_requests, o => o.to)
+  // This incomings is an arrau of userKeys that have sent request to currentUser
+  const incomings = map(userObj.incoming_requests, o => o.from)
 
   people.forEach((o) => {
+    // Don't include currentUser in this list
     if (o['.key'] === userObj['.key']) return
 
-    // If the currentUser sent a request to this person, set status as pending
-    const status = sentUsers.includes(o['.key'])
-      ? 'pending'
-      : false
+    // If currentUser sent a request to this person,
+    // or if he has an incoming request from this person,
+    // then set status to pending
+    let status
+    if ((sents.includes(o['.key'])) || (incomings.includes(o['.key']))) {
+      status = 'pending'
+    } else {
+      status = false
+    }
 
     peopleList.push({
       userKey: o['.key'],
@@ -71,5 +81,49 @@ export const processPeople = ({ people, userObj }) => {
       status
     })
   })
+
   return peopleList
+}
+
+export const processRequests = ({
+  peopleList = {},
+  sentRequests = {},
+  incomingRequests = {}
+} = {}) => {
+  let requests
+  if (!isEmpty(sentRequests)) requests = sentRequests
+  if (!isEmpty(incomingRequests)) requests = incomingRequests
+  if (isEmpty(requests)) return null
+
+  // The property 'to' is for sents, the property 'from' is for incomings
+  // Only one gets processed each time
+  // const requestUserIds = isEmpty(sentRequests) ? map(requests, 'from') : map(requests, 'to')
+  const requestUserObjects = []
+
+  forEach(requests, (value, key) =>
+    requestUserObjects.push({
+      requestKey: key,
+      userKey: value.from || value.to
+    }))
+
+  const requestUsers = []
+  requestUserObjects.forEach((requestObj) => {
+    const match = peopleList.find(o => o.userKey === requestObj.userKey)
+    requestUsers.push({ ...match, requestKey: requestObj.requestKey })
+  })
+
+  return requestUsers
+}
+
+export const processFriends = ({ peopleList = {}, friends = {} } = {}) => {
+  if (isEmpty(friends)) return null
+  const friendsKeys = map(friends, 'uid')
+
+  const friendsList = []
+  friendsKeys.forEach((key) => {
+    const match = peopleList.find(o => o.userKey === key)
+    friendsList.push(match)
+  })
+
+  return friendsList
 }
