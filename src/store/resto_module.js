@@ -103,9 +103,8 @@ export default {
 
         const updates = await createRestaurant(data, restoKey, currentUser)
 
-
-        // Dispatch operations affecting firebase entries different than restuarant
-        // If resto is new, add restaurant to user
+        // Dispatch operations affecting firebase entries different than restuarants
+        // If restaurant is new, add it to user
         if (!inputs['.key']) await dispatch(ADD_RESTO_TO_USER, restoKey)
 
         // Edit comment, if there's any
@@ -113,6 +112,7 @@ export default {
           await dispatch(WRITE_COMMENT_TO_FB, Object.assign(comment, commentInfo))
         }
 
+        // Finally, perform the update restaurant operation
         await restosRef.child(restoKey).update(updates)
       } catch (err) {
         console.error('writeRestaurantToFb: ', err)

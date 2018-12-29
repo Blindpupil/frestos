@@ -1,34 +1,70 @@
 <template>
   <v-app dark id="inspire">
-    <v-navigation-drawer fixed clipped v-model="drawer" app>
+    <v-navigation-drawer fixed clipped v-model="drawer" app light>
       <v-list dense>
-        <v-list-tile v-for="item in items" :key="item.text" @click="route(item.link)">
+
+        <v-list-tile class="py-3" @click="route('/dashboard')">
+          <v-list-tile-avatar size="50">
+            <img :src="userObj.picture" alt="Profile Picture">
+          </v-list-tile-avatar>
+          <v-list-tile-title v-text="userObj.name"></v-list-tile-title>
+        </v-list-tile>
+
+        <v-list-tile
+          v-for="item in items" :key="item.text"
+          @click="route(item.link)"
+          :class="[ activetab === item.tab ? 'active' : '' ]"
+        >
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
+
           <v-list-tile-content>
             <v-list-tile-title>
-              <p> {{item.text}} </p>
+              <p>{{item.text}}</p>
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
 
         <v-subheader class="mt-3 grey--text text--darken-1">FOODY FRIENDS</v-subheader>
 
-        <v-list>
-          <v-list-tile v-for="item in friends" :key="item.text" avatar>
+        <v-list v-if="friendsList">
+          <v-list-tile v-for="friend in friendsList" :key="friend.userKey" avatar>
             <v-list-tile-avatar>
-              <img :src="`https://randomuser.me/api/portraits/men/${item.picture}.jpg`" alt="">
+              <img
+                :src="friend.picture ||
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQevgWjR63wZ3_lGeYbgHAU_eYW4iaxCHxmkxi8bLmcoop-QlsVvQ'" 
+                alt="User profi;e"
+              >
             </v-list-tile-avatar>
-            <v-list-tile-title v-text="item.text"></v-list-tile-title>
+
+            <v-list-tile-title v-text="friend.name"></v-list-tile-title>
+
+            <v-tooltip top>
+              <v-hover slot="activator">
+                <v-icon
+                  slot-scope="{ hover }"
+                  :class="`elevation-${hover ? 12 : 0}`"
+                  @click="removeFriend(friend)"
+                >
+                  remove_circle_outline
+                </v-icon>
+              </v-hover>
+              <span>Remove friend</span>
+            </v-tooltip>
           </v-list-tile>
         </v-list>
+        <v-subheader v-else>
+          You're alone here, add friends!
+        </v-subheader>
 
-        <v-list-tile class="mt-3">
-          <v-list-tile-action>
-            <v-icon color="grey darken-1">add_circle_outline</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title class="grey--text text--darken-1">Add New Friend</v-list-tile-title>
+        <v-list-tile>
+          <add-friends-dialog> 
+            <v-btn round color="blue-grey" class="white--text my-3">
+              <v-icon left dark>person_add</v-icon>
+              Add new friends
+            </v-btn>
+          </add-friends-dialog>
         </v-list-tile>
 
         <v-list-tile>
@@ -80,50 +116,69 @@
 <script>
   import Routes from '@/router'
   import { mapGetters } from 'vuex'
-  import { auth } from '@/firebase'
+  import { auth, usersRef } from '@/firebase'
   import {
+    HANDLE_PROVIDER_RESPONSE,
     LOGOUT,
-    HANDLE_GOOGLE_RESPONSE,
-    HANDLE_FACEBOOK_RESPONSE
+    SET_USER_REF,
+    REMOVE_FRIEND
   } from '@/store/types/action_types'
+  import AddFriendsDialog from '@/components/dashboard/friends/AddFriendsDialog'
 
   export default {
     name: 'Dashboard',
     components: {
-      Routes
+      Routes,
+      AddFriendsDialog
     },
-    created() {
-      // Handle response from Google OAuth
-      this.$store.dispatch(HANDLE_GOOGLE_RESPONSE)
-      this.$store.dispatch(HANDLE_FACEBOOK_RESPONSE)
+    async created() {
+      this.handleTab(window.location.href)
+      // Handle response from auth provider
+      await this.$store.dispatch(HANDLE_PROVIDER_RESPONSE)
+
+      // Set user object
+      const user = this.currentUser
+      await this.$store.dispatch(SET_USER_REF, usersRef.child(user))
     },
     computed: {
-      ...mapGetters({
-        // map this.user to this.$store.getters.auth.currentUser
-        user: 'currentUser'
-      })
+      ...mapGetters(['userObj', 'currentUser', 'friendsList'])
     },
     data() {
       return {
         drawer: true,
+        activetab: '',
         items: [
-          { icon: 'trending_up', text: 'Restaurants', link: '/dashboard/restaurants' },
-          { icon: 'event', text: 'Meetings', link: '/dashboard/meetings' }
-        ],
-        friends: [
-          { picture: 28, text: 'Joseph' },
-          { picture: 38, text: 'Apple' },
-          { picture: 48, text: 'Xbox Ahoy' },
-          { picture: 58, text: 'Nokia' },
-          { picture: 78, text: 'MKBHD' }
+          {
+            icon: 'room_service',
+            text: 'Restaurants',
+            link: '/dashboard/restaurants',
+            tab: 'restaurants'
+          },
+          {
+            icon: 'event',
+            text: 'Meetings',
+            link: '/dashboard/meetings',
+            tab: 'meetings'
+          }
         ]
       }
     },
     methods: {
       route(link) {
+        this.handleTab(link)
         this.$router.push(link)
       },
-      logout() {
+      handleTab(link) {
+        const tab = link.substr(link.lastIndexOf('/') + 1)
+
+        tab === 'dashboard'
+          ? this.activetab = ''
+          : this.activetab = tab
+      },
+      removeFriend(friend) {
+        this.$store.dispatch(REMOVE_FRIEND, friend)
+      },
+       logout() {
         this.$store.dispatch(LOGOUT)
           .then(() => this.$router.push('/login'))
       }
@@ -134,17 +189,23 @@
 <style scoped lang="scss">
   // TODO: create files with custom variables, mixins, etc. See https://vuetifyjs.com/en/style/colors
   $primary: lightgray;
+  $secondary: #ffeecc;
 
   .title a {
     color: $primary;
     text-decoration: none;
   }
-  .hoverable:hover {
-    i {
-      color: $primary !important;
-    }
-    .list__tile__title {
-      color: $primary !important;
-    }
+
+  .v-list .active {
+    background-color: $secondary;
+  }
+
+  .v-list__tile__title .pending {
+    color: $primary;
+    font-style: italic;
+  }
+
+  i.v-icon--link {
+    border-radius: 20px;
   }
 </style>

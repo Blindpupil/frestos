@@ -25,9 +25,12 @@
     </v-flex>
 
     <add-restaurant-dialog> 
-      <v-btn fixed bottom right fab dark color="indigo">
-        <v-icon dark>add</v-icon>
-      </v-btn> 
+      <v-tooltip left>
+        <v-btn slot="activator" fixed bottom right fab dark color="indigo">
+          <v-icon dark>add</v-icon>
+        </v-btn>
+        <span>Add restaurant</span>
+      </v-tooltip>
     </add-restaurant-dialog>
   </v-layout>
 </template>

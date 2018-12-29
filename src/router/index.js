@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { isEmpty } from 'lodash-es'
+import { get, isEmpty } from 'lodash-es'
 import store from '@/store'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
@@ -14,8 +14,11 @@ Vue.use(VueRouter)
 
 async function requireAuth(to, from, next) {
   try {
-    await store.dispatch(SESSION) // required to maintain the session
-    if (isEmpty(store.getters.currentUser)) {
+    // Required to maintain the session
+    await store.dispatch(SESSION)
+    const currentUser = get(store, 'getters.currentUser', null)
+
+    if (isEmpty(currentUser)) {
       next({ path: '/login', replace: true })
     } else {
       next()
@@ -25,12 +28,16 @@ async function requireAuth(to, from, next) {
     console.error('error in requireAuth.', err)
   }
 }
-
+// When you log in through a Provider it takes you back to the login page.
+// This is the function that redirects to the dashboard if login worked
 async function checkForExistingSession(to, from, next) {
   try {
-    // TODO: replace for a fullpage loader (currently stays in a whitescreen for long)
+    // TODO: replace for a fullpage loader
+    // (currently stays in a whitescreen for long)
     await store.dispatch(SESSION)
-    if (!isEmpty(store.getters.currentUser)) {
+    const currentUser = get(store, 'getters.currentUser', null)
+
+    if (!isEmpty(currentUser)) {
       next({ path: '/dashboard', replace: true })
     } else {
       next()
