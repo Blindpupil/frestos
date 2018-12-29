@@ -3,7 +3,7 @@ import { firebaseAction } from 'vuexfire'
 import { isEmpty } from 'lodash-es'
 import {
   commentsRef,
-  customRef,
+  usersRef,
   restosRef
 } from '@/firebase'
 import {
@@ -15,6 +15,7 @@ import { createRestaurant } from '@/models/Restaurant'
 import {
   ADD_COMMENT_TO_RESTO,
   ADD_RESTO_TO_USER,
+  ADD_USER_TO_RESTO,
   DELETE_COMMENT_FROM_RESTO,
   GET_RESTOS_CARDS,
   SET_COMMENTS_REF,
@@ -101,13 +102,13 @@ export default {
           commentInfo
         }
 
-        const updates = await createRestaurant(data, restoKey, currentUser)
+        const updates = await createRestaurant({ data, restoKey, currentUser })
 
-        // Dispatch operations affecting firebase entries different than restuarants
+        // Dispatch operations affecting firebase entries different than restaurant.
         // If restaurant is new, add it to user
         if (!inputs['.key']) await dispatch(ADD_RESTO_TO_USER, restoKey)
 
-        // Edit comment, if there's any
+        // Write comment, if there's any content
         if (commentInfo.hasContent) {
           await dispatch(WRITE_COMMENT_TO_FB, Object.assign(comment, commentInfo))
         }
@@ -128,11 +129,22 @@ export default {
         commit(SET_ERROR, err)
       }
     },
+    async [ADD_USER_TO_RESTO]({ getters, commit }, { restoKey, targetKey }) {
+      // This is a secondary operation to adding the restaurant to the user
+      const { currentUser } = getters
+      try {
+        // Add user ID to resto object
+        await restosRef.child(`${restoKey}/users/${targetKey}`).set(currentUser)
+      } catch (err) {
+        console.error(ADD_USER_TO_RESTO, err)
+        commit(SET_ERROR, err)
+      }
+    },
     async [DELETE_COMMENT_FROM_RESTO]({ commit, dispatch, getters }, { restoKey, commentKey }) {
       const { currentUser } = getters
       try {
         // Remove the user from the restaurant
-        await dispatch(SET_RESTO_USERS_REF, customRef(`restaurants/${restoKey}/users`))
+        await dispatch(SET_RESTO_USERS_REF, restosRef.child(`${restoKey}/users`))
 
         const userList = getters.restoUsers
         const userKeyInResto = userList.find(o => o['.value'] === currentUser)['.key']
@@ -140,7 +152,7 @@ export default {
         await restosRef.child(`${restoKey}/users/${userKeyInResto}`).remove()
 
         // Remove the user comment from the restaurant
-        await dispatch(SET_RESTO_COMMENTS_REF, customRef(`restaurants/${restoKey}/comments`))
+        await dispatch(SET_RESTO_COMMENTS_REF, restosRef.child(`${restoKey}/comments`))
 
         const commentList = getters.restoComments
         const commentKeyInResto = commentList.find(o => o['.value'] === commentKey)['.key']
@@ -154,7 +166,7 @@ export default {
     async [GET_RESTOS_CARDS]({ commit, getters, dispatch }) {
       const { currentUser } = getters
       try {
-        await dispatch(SET_USER_REF, customRef(`users/${currentUser}`))
+        await dispatch(SET_USER_REF, usersRef.child(currentUser))
         await dispatch(SET_RESTOS_REF, restosRef)
         await dispatch(SET_COMMENTS_REF, commentsRef)
       } catch (err) {

@@ -11,11 +11,6 @@ export const restosRef = db.ref('restaurants')
 export const usersRef = db.ref('users')
 export const commentsRef = db.ref('comments')
 
-// Custom reference
-export function customRef(reference) {
-  return db.ref(reference)
-}
-
 // Auth function
 export const auth = firebase.auth()
 

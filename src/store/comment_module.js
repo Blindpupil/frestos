@@ -24,6 +24,8 @@ export default {
       bindFirebaseRef('comments', ref)
     }),
     async [WRITE_COMMENT_TO_FB]({ commit, dispatch }, comment) {
+      // Comments are always written in the context of a restaurant card.
+      // The resto_module will thus always provide the comment key
       const commentId = comment['.key']
       const { isNew } = comment
 
@@ -32,23 +34,18 @@ export default {
         restaurant: comment.restaurant,
         uid: comment.uid
       }
-
-      let commentKey
       try {
-        commentKey = commentId || await commentsRef.push().key
-
-        await commentsRef.child(commentKey).update(newComment)
+        await commentsRef.child(commentId).update(newComment)
 
         // Every time a new comment object is added, its ID is added to the user who wrote it
-        // and to the restaurant it's referring to but thats already handled in resto_module
+        // and to the restaurant it's referring to but that's already handled in resto_module
         if (isNew) {
-          await dispatch(ADD_COMMENT_TO_USER, commentKey)
+          await dispatch(ADD_COMMENT_TO_USER, commentId)
         }
       } catch (err) {
         console.error('writeCommentToFb action error: ', err)
         commit(SET_ERROR, err)
       }
-      return commentKey
     },
     async [DELETE_COMMENT]({ commit, dispatch }, { restoKey, commentKey }) {
       try {

@@ -36,7 +36,7 @@
       </v-card-title>
 
       <v-card-actions>
-        <v-btn flat color="purple">Comments</v-btn>
+        <span class="px-2 body-2">Comments</span>
         <v-spacer></v-spacer>
         <v-btn icon @click="show = !show">
           <v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
