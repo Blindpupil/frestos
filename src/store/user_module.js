@@ -158,8 +158,7 @@ export default {
       try {
         // Share the same friendListKey in both users
         const friendListKey = await usersRef.child(`${currentUser}/friends`).push().key
-        const timestamp = new Date()
-        timestamp.toString()
+        const timestamp = new Date().toString()
 
         // Add friend to target
         await usersRef.child(`${userKey}/friends/${friendListKey}`).set({
